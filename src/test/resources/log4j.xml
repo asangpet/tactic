@@ -12,10 +12,6 @@
 	
 	<!-- Application Loggers -->
 	<logger name="edu.cmu.one">
-		<level value="info" />
-	</logger>
-	
-	<logger name="testlog">
 		<level value="trace" />
 	</logger>
 	
@@ -35,6 +31,10 @@
 	<logger name="org.springframework.web">
 		<level value="info" />
 	</logger>
+	
+	<logger name="org.springframework.test">
+		<level value="info" />
+	</logger>	
 
 	<!-- Root Logger -->
 	<root>
