@@ -11,6 +11,7 @@ slf4jVersion = '1.6.1'
 repositories {
     mavenCentral()
     mavenRepo urls: 'http://maven.springframework.org/snapshot'
+    flatDir name: 'localRepository', dirs: file('lib')
     //mavenRepo urls: 'http://repository.springsource.com/maven/bundles/external'
 }
 
@@ -34,7 +35,11 @@ dependencies {
  	compile group: 'javax.servlet', name: 'jstl', version: '1.2'
  	compile group: 'org.aspectj', name: 'aspectjrt', version: '1.6.11'
  	providedCompile group: 'org.mortbay.jetty', name: 'servlet-api', version: '3.0.20100224'
- 	compile group: 'cglib', name:'cglib-nodep', version: '2.2'
+ 	compile group: 'cglib', name: 'cglib-nodep', version: '2.2'
+	compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.8.4' 
+
+	// Matlab
+	compile group: 'matlabcompiler', name: 'matlabcompiler', version: '0.1'
 
 	// Test
  	testCompile group: 'junit', name: 'junit', version: '4.8.2'

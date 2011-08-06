@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry exported="true" kind="con" path="com.springsource.sts.gradle.classpathcontainer"/>
+	<classpathentry kind="lib" path="lib/matlabcompiler.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
