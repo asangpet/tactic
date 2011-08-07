@@ -11,6 +11,8 @@ slf4jVersion = '1.6.1'
 repositories {
     mavenCentral()
     mavenRepo urls: 'http://maven.springframework.org/snapshot'
+	mavenRepo urls: 'http://maven.springframework.org/milestone'
+	mavenRepo urls: 'http://download.java.net/maven/2'
     flatDir name: 'localRepository', dirs: file('lib')
     //mavenRepo urls: 'http://repository.springsource.com/maven/bundles/external'
 }
@@ -23,6 +25,7 @@ dependencies {
 	// Spring
 	compile group: 'org.springframework', name: 'spring-webmvc', version:springVersion
     compile group: 'org.springframework', name: 'spring-context', version:springVersion
+	compile group: 'org.springframework.data', name: 'spring-data-mongodb', version:'1.0.0.M3'
 	
 	// Logging
     compile group: 'log4j', name: 'log4j', version: '1.2.16'
@@ -40,6 +43,7 @@ dependencies {
 
 	// Matlab
 	compile group: 'matlabcompiler', name: 'matlabcompiler', version: '0.1'
+	runtime group: 'net.java.dev.jna', name: 'jna', version: '3.2.4'
 
 	// Test
  	testCompile group: 'junit', name: 'junit', version: '4.8.2'

@@ -1,7 +1,6 @@
 package edu.cmu.tactic.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -277,7 +276,7 @@ public class AnalysisGraph extends InstanceGraph {
 					
 					//def newCompResp = []
 					//def newDistResp = []
-					int newCount = 0;
+					//int newCount = 0;
 					// find parametric transfer for the result
 					if (distRespPdf == null) {
 						// Composite only						
