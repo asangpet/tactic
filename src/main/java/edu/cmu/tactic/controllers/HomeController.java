@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.cmu.tactic.model.Pet;
+import edu.cmu.tactic.services.ResponseDataService;
 
 /**
  * Handles requests for the application home page.
@@ -25,8 +26,8 @@ import edu.cmu.tactic.model.Pet;
 @Controller
 public class HomeController {
 	
-	@Inject 
-	private Logger logger;
+	@Inject private Logger logger;
+	@Inject ResponseDataService responseData;
 	
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -41,7 +42,7 @@ public class HomeController {
 		String formattedDate = dateFormat.format(date);
 		
 		model.addAttribute("serverTime", formattedDate );
-		
+		model.addAttribute("response", responseData.listServer("192.168.0.106"));
 		return "home";
 	}
 	

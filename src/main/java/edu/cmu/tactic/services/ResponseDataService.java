@@ -1,5 +1,7 @@
 package edu.cmu.tactic.services;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -32,9 +34,7 @@ public class ResponseDataService {
 		}
 	}
 	
-	void listServer(String ip) {
-		for (Response r:responseRepo.findByServerAddress(ip)) {
-			log.info(r.toString());
-		}
+	public List<Response> listServer(String ip) {
+		return responseRepo.findByServerAddress(ip);
 	}
 }

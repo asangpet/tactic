@@ -10,5 +10,12 @@
 </h1>
 
 <P>  The time on the server is ${serverTime}. </P>
+
+<ul>
+<c:forEach items="${response}" var="resp">
+<li><c:out value="${resp}"/></li>	
+</c:forEach>
+</ul>
+
 </body>
 </html>

@@ -50,6 +50,13 @@ dependencies {
  	testCompile group: 'org.springframework', name: 'spring-test', version:springVersion
 }
 
+war {
+  webInf {
+    into "classes/edu/cmu/tactic/data"
+    from "src/main/java/edu/cmu/tactic/data/repo.xml"
+  }
+}
+
 task deploy(type: Copy, dependsOn: war) {
   from "build/libs/tactic-${version}.war"
   into "../../apps/apache-tomcat-7.0.19/webapps"
