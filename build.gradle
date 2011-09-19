@@ -26,6 +26,7 @@ dependencies {
 	compile group: 'org.springframework', name: 'spring-webmvc', version:springVersion
     compile group: 'org.springframework', name: 'spring-context', version:springVersion
 	compile group: 'org.springframework.data', name: 'spring-data-mongodb', version:'1.0.0.M3'
+	compile group: 'org.thymeleaf', name: 'thymeleaf-spring3', version:'1.1.0'
 	
 	// Logging
     compile group: 'log4j', name: 'log4j', version: '1.2.16'

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>ThymeTest</title>
+  </head>
+  <body>
+	<h1>
+	Hello world!  
+	</h1>
+
+	<p>  The time on the server is <span th:text="${serverTime}">00:00:00 PM EST</span>. </p>
+
+	<table>
+		<tbody>
+			<tr th:each="resp : ${response}">
+				<td th:text="${resp}">Sample Response</td>
+			</tr>
+		</tbody>
+	</table>
+
+  </body>
+</html>
