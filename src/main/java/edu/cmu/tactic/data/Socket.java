@@ -1,11 +1,12 @@
 package edu.cmu.tactic.data;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class Socket {
-	String address;
-	int port;
+	@JsonProperty String address;
+	@JsonProperty int port;
 	
-	@Override
 	public String toString() {
-		return address + ":" + port;
+		return "address:"+address+",port:"+port;
 	}
 }

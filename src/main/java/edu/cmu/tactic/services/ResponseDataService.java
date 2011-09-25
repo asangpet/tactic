@@ -1,11 +1,11 @@
 package edu.cmu.tactic.services;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
-import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import edu.cmu.tactic.data.Response;
@@ -34,7 +34,7 @@ public class ResponseDataService {
 		}
 	}
 	
-	public List<Response> listServer(String ip) {
-		return responseRepo.findByServerAddress(ip);
+	public Page<Response> listServer(String ip) {		
+		return responseRepo.findByServerAddress(ip, new PageRequest(0,100));
 	}
 }

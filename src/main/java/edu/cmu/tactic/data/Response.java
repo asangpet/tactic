@@ -1,18 +1,17 @@
 package edu.cmu.tactic.data;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.document.mongodb.mapping.Document;
-
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection="responseTime")
 public class Response {
-	@Id
-	private String id;
-	private long timestamp;
-	private Socket server, client;
-	private double requestTime, responseTime;
-	private String request,response;
-	private String protocol;
+	@Id @JsonProperty private String id;
+	@JsonProperty private long timestamp;
+	@JsonProperty private Socket server, client;
+	@JsonProperty private double requestTime, responseTime;
+	@JsonProperty private String request,response;
+	@JsonProperty private String protocol;
 	
 	public String getProtocol() {
 		return protocol;

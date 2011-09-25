@@ -8,6 +8,9 @@ sourceCompatibility = '1.7'
 springVersion = '3.1.0.BUILD-SNAPSHOT'
 slf4jVersion = '1.6.1'
 
+//deployPath = '/home/asangpet/springsource/vfabric-tc-server-developer-2.6.0.RELEASE/tactic/webapps'
+deployPath = '/home/asangpet/apps/apache-tomcat-7.0.19/webapps'
+
 repositories {
     mavenCentral()
     mavenRepo urls: 'http://maven.springframework.org/snapshot'
@@ -25,7 +28,7 @@ dependencies {
 	// Spring
 	compile group: 'org.springframework', name: 'spring-webmvc', version:springVersion
     compile group: 'org.springframework', name: 'spring-context', version:springVersion
-	compile group: 'org.springframework.data', name: 'spring-data-mongodb', version:'1.0.0.M3'
+	compile group: 'org.springframework.data', name: 'spring-data-mongodb', version:'1.0.0.M4'
 	compile group: 'org.thymeleaf', name: 'thymeleaf-spring3', version:'1.1.0'
 	
 	// Logging
@@ -58,7 +61,13 @@ war {
   }
 }
 
+//task deploy(type: Copy) {
+//	into deployPath+"/tactic"
+//	with war
+//}
+
 task deploy(type: Copy, dependsOn: war) {
-  from "build/libs/tactic-${version}.war"
-  into "../../apps/apache-tomcat-7.0.19/webapps"
+  //from "build/libs/tactic-${version}.war"
+  with war
+  into deployPath+"/tactic"
 }
