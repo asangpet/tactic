@@ -35,6 +35,8 @@ public class Response {
 		builder.append(" proto:").append(protocol);
 		builder.append(" time - req:").append(requestTime);
 		builder.append(" res:").append(responseTime);
+		builder.append(" req:").append(request);
+		builder.append(" req:").append(response);
 		return builder.toString();
 	}
 }
