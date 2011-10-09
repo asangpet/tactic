@@ -63,7 +63,7 @@ public class InstanceGraph {
 		return this;
 	}
 				
-	Node addNode(String name, Service tier) {
+	Node addNode(String name, Component tier) {
 		Node newNode = getNode(name);
 		if (newNode == null) {
 			newNode = new Node(name, currentIndex, tier, false);

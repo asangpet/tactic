@@ -1,15 +1,24 @@
 package edu.cmu.tactic.model;
 
-public class Dependency extends Service {
-	boolean match = false;
+import java.util.List;
+
+
+public class Dependency extends Entity {
+	@Deprecated
+	boolean match = false;	// Indicate whether we should match the list instance with the given dependencies
+	List<Component> components;	
+	
 	public Double distProb;
 	
+	public Dependency() {
+		super("dep");
+	}
+	
 	public String toString() {
-		String result = name+" = { "+label;
+		String result = name+" = { ";
 
 		if (match) { result+= ", match"; }
-		if (instances.length > 0) { result+= ", instances: ${instances}"; }
-		if (dependencies.size() > 0) { result+= ", dep:${dependencies}"; }
+		if (components.size() > 0) { result+= ", instances: ${instances}"; }
 		return result+" }";
 	}
 }

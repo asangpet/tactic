@@ -4,6 +4,9 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 
+import edu.cmu.tactic.model.Entity;
+import edu.cmu.tactic.model.Service;
+
 import java.util.LinkedHashMap;
 
 /**
@@ -16,6 +19,7 @@ public abstract class Cluster extends Entity {
 	@JsonProperty LinkedHashMap<String,Host> hosts;
 	@JsonProperty LinkedHashMap<String,Service> services;
 	@JsonProperty LinkedHashMap<String,VirtualMachine> vms;
+	ComponentMonitor componentMonitor;
 	ListMultimap<Host, VirtualMachine> mapping;
 	
 	public Cluster(String name) {
@@ -24,10 +28,13 @@ public abstract class Cluster extends Entity {
 		services = new LinkedHashMap<String, Service>();
 		vms = new LinkedHashMap<String, VirtualMachine>();
 		mapping = LinkedListMultimap.create(hosts.size());
+		
+		componentMonitor = new ComponentMonitor(name+"-component-monitor");
 	}
 	
 	public Cluster add(Service service) {
 		services.put(service.getName(),service);
+		componentMonitor.add(service);
 		return this;
 	}
 	

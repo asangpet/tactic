@@ -7,6 +7,8 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
+import edu.cmu.tactic.model.Component;
+
 public class ImpactCluster extends Cluster {
 	@Inject Logger log;
 	
@@ -18,20 +20,10 @@ public class ImpactCluster extends Cluster {
 		// Best-fit impact placement
 		
 		// Find average component co-arrival
-		for (Service service:services.values()) {
-			for (Component comp:service.components.values()) {
-				comp.coarrival = 0.5;
-			}
-		}
+		componentMonitor.findCoarrival();
 		
 		// Find average normalized impact
-		double testImpact = 0.1;
-		for (Service service:services.values()) {
-			for (Component comp:service.components.values()) {
-				comp.impact = testImpact;
-				testImpact += 0.1;
-			}
-		}		
+		componentMonitor.findImpact();
 		
 		// Sort by, for each VM, sum (co * impact) for all component hosted inside
 		Comparator<VirtualMachine> comparator = new Comparator<VirtualMachine>() {
@@ -46,7 +38,7 @@ public class ImpactCluster extends Cluster {
 		for (VirtualMachine vm:vms.values()) {
 			vm.score = 0;
 			for (Component comp:vm.tenants.values()) {
-				vm.score += comp.impact * comp.coarrival;
+				vm.score += comp.getImpact() * comp.getCoarrival();
 			}
 			vmQueue.add(vm);
 		}
@@ -73,7 +65,7 @@ public class ImpactCluster extends Cluster {
 			VirtualMachine vm = vmQueue.poll();
 			Host host = availableHost.poll();
 			
-			log.debug("Put vm {}/{} on host {}/{}", new Object[] { vm.name, vm.score, host.name, host.load });
+			log.debug("Put vm {}/{} on host {}/{}", new Object[] { vm.getName(), vm.score, host.getName(), host.load });
 
 			host.load += vm.score;
 			host.add(vm);

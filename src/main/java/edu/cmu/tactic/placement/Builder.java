@@ -1,5 +1,8 @@
 package edu.cmu.tactic.placement;
 
+import edu.cmu.tactic.model.Component;
+import edu.cmu.tactic.model.Service;
+
 public class Builder {
 	public Service webServiceBuilder() {
 		Service webService = new Service("webservice");

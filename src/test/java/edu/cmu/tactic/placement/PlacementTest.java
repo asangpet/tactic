@@ -67,7 +67,7 @@ public class PlacementTest {
 	public void testImpactCluster() throws Exception {		
 		Cluster cluster = context.getBean(ImpactCluster.class);
 		cluster = builder.clusterBuilder(cluster);
-		log.info("Test "+cluster.name);
+		log.info("Test "+cluster.getName());
 		ObjectWriter writer = mapper.defaultPrettyPrintingWriter();
 		cluster.place();
 		System.out.println(writer.writeValueAsString(cluster));		

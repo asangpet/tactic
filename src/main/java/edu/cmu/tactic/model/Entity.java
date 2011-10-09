@@ -1,4 +1,4 @@
-package edu.cmu.tactic.placement;
+package edu.cmu.tactic.model;
 
 public class Entity {
 	String name;

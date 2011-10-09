@@ -3,7 +3,7 @@ package edu.cmu.tactic.model;
 public class Node {
 	String name;
 	int id,vid;
-	Service tier;
+	Component tier;
 	boolean mark,edited,transferEdited;
 	
 	Double x = null;
@@ -21,7 +21,7 @@ public class Node {
 	Double shiftValue = null;
 	Subgraph parents = null;
 	
-	public Node(String name, int id, Service tier, boolean mark) {
+	public Node(String name, int id, Component tier, boolean mark) {
 		this.name = name;
 		this.id = id;
 		this.tier = tier;
