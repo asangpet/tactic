@@ -74,6 +74,17 @@ public class InstanceGraph {
 		return newNode;
 	}
 	
+	Node addNode(Component tier) {
+		Node newNode = getNode(tier.name);
+		if (newNode == null) {
+			newNode = new Node(tier.name, currentIndex, tier, false);
+			currentIndex++;
+			nodes.put(tier.name, newNode);
+			nodeList.add(newNode);
+		}
+		return newNode;
+	}
+	
 	// helper function which automatically create a cloned link when editing values
 	// used to create transformed graph and preserve the original link's information 
 	void resetLink(Link link, Node source, Node target, Dependency type) {

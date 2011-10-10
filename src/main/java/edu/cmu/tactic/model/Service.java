@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.common.collect.LinkedListMultimap;
+
 
 /**
  * Service is an entity for macro-management
@@ -30,6 +32,7 @@ public class Service extends Entity {
 	String name;
 	String label = "service";
 	LinkedHashMap<String,Component> components;
+	LinkedListMultimap<Component,Dependency> dependencies;
 	
 	UUID uuid = UUID.randomUUID();
 	HashMap<String,String> tierMap = new HashMap<String, String>();
@@ -49,7 +52,8 @@ public class Service extends Entity {
 	AnalysisGraph getAnalysisGraph(boolean reset) {
 		if (analysisGraph == null && !reset) {
 			analysisGraph = getInstanceGraph().createNewInstance();
-			transformGraph();
+			// TODO: Implement graph transformation template
+			//transformGraph();
 			
 			// update parents
 			for (Node it:analysisGraph.nodeList) {
@@ -73,6 +77,7 @@ public class Service extends Entity {
 	}
 	// apply relationship transform based on node type
 	// TODO: should extract out as plugin
+	/*
 	void transformGraph() {
 		AnalysisGraph graph = analysisGraph;
 		List<NodeTemplate> modNodes = new LinkedList<NodeTemplate>();
@@ -106,17 +111,18 @@ public class Service extends Entity {
 			}
 		}
 	}
+	*/
 	
 	// Get instance graph associated with this service
 	AnalysisGraph getInstanceGraph() {
 		if (graph == null) {
 			graph = new AnalysisGraph();
-			createGraph(this.rootComponent ,graph, null, null);
+			createGraph(this.rootComponent ,graph, null);
 		}
 		return graph;
 	}
 	
-	void createGraph(Component tier, InstanceGraph graph, Node root, Integer matchIndex) {
+	void createGraph(Component tier, InstanceGraph graph, Node root) {
 		Node thisNode = null;
 		if (root!=null) {
 			thisNode = graph.getNode(root.name);
@@ -132,29 +138,26 @@ public class Service extends Entity {
 		}
 		graph.mark(thisNode);
 		
-		for (Dependency rel:tier.dependencies) {
-			int idx = 0;
-			for (Component component:rel.components) {
-				// create a link between the components based on dependency type, 
-				if (idx == matchIndex) {
-					Node subNode = graph.addNode(component.name, component);					
-					try {
-						graph.addLink(root,subNode,rel.getClass().newInstance());
-						createGraph(component,graph,subNode,idx);
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-				}
-				idx++;
-			}
+		for (Dependency rel:dependencies.get(tier)) {
+			Node initiator = graph.addNode(rel.initiator);
+			Node upstream = graph.addNode(rel.upstream);
+			graph.addLink(initiator, upstream, rel);
+			createGraph(rel.upstream,graph,upstream);
 		}
 	}
 	
 	public Service(String name) {
 		super(name);
 		components = new LinkedHashMap<String,Component>();
+		dependencies = LinkedListMultimap.create();
+	}
+	
+	public void setRootComponent(Component component) {
+		this.rootComponent = component;
+	}
+	
+	public Component getRootComponent() {
+		return rootComponent;
 	}
 	
 	public Service add(Component component) {
@@ -162,8 +165,26 @@ public class Service extends Entity {
 		return this;
 	}
 	
+	public Service add(Dependency dep) {
+		dependencies.put(dep.initiator, dep);
+		return this;
+	}
+	
 	public Component getComponent(String name) {
 		return components.get(name);
+	}
+	
+	public Collection<Dependency> getDependencies() {
+		return dependencies.values();
+	}
+	
+	public Component addComponent(String name) {
+		Component result = components.get(name);
+		if (result == null) {
+			result = new Component(name);
+			add(result);
+		}
+		return result;
 	}
 	
 	/**

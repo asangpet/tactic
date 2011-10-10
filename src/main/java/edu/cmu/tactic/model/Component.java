@@ -1,9 +1,5 @@
 package edu.cmu.tactic.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
  * A component belongs to a service and could be hosted on different virtual machines
  * 
@@ -13,7 +9,6 @@ import java.util.List;
 public class Component extends Entity {
 	double coarrival;
 	double impact;
-	List<Dependency> dependencies = new ArrayList<Dependency>();
 	
 	@Deprecated String[] instances;
 	
@@ -26,7 +21,6 @@ public class Component extends Entity {
 		String result = name+" = { "+name;
 		
 		if (instances.length > 0) { result+= ", instances: "+instances; }
-		if (dependencies.size() > 0) { result+= ", dep:"+dependencies; }
 		return result+" }";				
 	}
 	
