@@ -7,6 +7,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.module.SimpleModule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import edu.cmu.tactic.builder.Builder;
+import edu.cmu.tactic.model.Service;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Configuration
@@ -55,6 +57,7 @@ public class PlacementTest {
 	@Inject Logger log;
 	@Inject ApplicationContext context;
 	
+	@Ignore
 	@Test
 	public void testRandomCluster() throws Exception {
 		Cluster cluster = context.getBean(RandomCluster.class);
@@ -72,7 +75,10 @@ public class PlacementTest {
 		log.info("Test "+cluster.getName());
 		ObjectWriter writer = mapper.defaultPrettyPrintingWriter();
 		cluster.place();
-		System.out.println(writer.writeValueAsString(cluster));		
+		System.out.println(writer.writeValueAsString(cluster));
+		
+		Service webService = cluster.getServices("webservice");
+		System.out.println(webService);
 	}
 	
 	/*

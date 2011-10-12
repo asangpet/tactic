@@ -52,6 +52,10 @@ public abstract class Cluster extends Entity {
 		return mapping;
 	}
 	
+	public Service getServices(String serviceName) {
+		return services.get(serviceName);
+	}
+	
 	public abstract void place();
 	
 }

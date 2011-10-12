@@ -29,7 +29,6 @@ import com.google.common.collect.LinkedListMultimap;
  *
  */
 public class Service extends Entity {
-	String name;
 	String label = "service";
 	LinkedHashMap<String,Component> components;
 	LinkedListMultimap<Component,Dependency> dependencies;
@@ -43,7 +42,9 @@ public class Service extends Entity {
 	Component rootComponent;
 	
 	public String toString() {
-		String result = name+" = { "+rootComponent + "}";
+		String result = name+" = { \"root\":"+rootComponent + ",";
+		result += "components:"+components+",";
+		result += "dependencies:"+dependencies+" }";
 		return result;
 	}
 	

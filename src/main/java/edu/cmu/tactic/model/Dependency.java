@@ -13,7 +13,7 @@ public class Dependency extends Entity {
 	}
 	
 	public String toString() {
-		String result = name+" = { ";
-		return result+" }";
+		String result = name+" = { "+initiator+"->"+upstream+" }";
+		return result;
 	}
 }

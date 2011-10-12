@@ -49,7 +49,7 @@ public class Builder {
 	public Cluster clusterBuilder(Cluster main) {
 		Service webService = webServiceBuilder();
 		
-		main.add(new Host("host1")).add(new Host("host2")).add(new Host("host3")).add(new Host("host4"));
+		main.add(new Host("host1")).add(new Host("host2")).add(new Host("host3")).add(new Host("host4")).add(new Host("host5"));
 		main.add(webService);
 		
 		VirtualMachine vm1 = new VirtualMachine("vm1").add(webService.getComponent("lb1"));
@@ -63,9 +63,9 @@ public class Builder {
 		VirtualMachine vm9 = new VirtualMachine("vm9").add(webService.getComponent("db1"));
 		VirtualMachine vm10 = new VirtualMachine("vm10").add(webService.getComponent("searcher"));
 		VirtualMachine vm11 = new VirtualMachine("vm11").add(webService.getComponent("search1"));
-		VirtualMachine vm12 = new VirtualMachine("vm11").add(webService.getComponent("search2"));
-		VirtualMachine vm13 = new VirtualMachine("vm11").add(webService.getComponent("search3"));
-		VirtualMachine vm14 = new VirtualMachine("vm11").add(webService.getComponent("log1"));
+		VirtualMachine vm12 = new VirtualMachine("vm12").add(webService.getComponent("search2"));
+		VirtualMachine vm13 = new VirtualMachine("vm13").add(webService.getComponent("search3"));
+		VirtualMachine vm14 = new VirtualMachine("vm14").add(webService.getComponent("log1"));
 		
 		main.add(vm1).add(vm2).add(vm3).add(vm4).add(vm5).add(vm6).add(vm7).add(vm8).add(vm9).add(vm10)
 			.add(vm11).add(vm12).add(vm13).add(vm14);

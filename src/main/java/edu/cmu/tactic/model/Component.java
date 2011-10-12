@@ -10,18 +10,14 @@ public class Component extends Entity {
 	double coarrival;
 	double impact;
 	
-	@Deprecated String[] instances;
-	
 	public Component(String name) {
 		super(name);
 	}
 	
 	@Override
 	public String toString() {
-		String result = name+" = { "+name;
-		
-		if (instances.length > 0) { result+= ", instances: "+instances; }
-		return result+" }";				
+		String result = "{ "+name+" }";
+		return result;				
 	}
 	
 	public void setCoarrival(double coarrival) {

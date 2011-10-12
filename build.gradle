@@ -5,7 +5,8 @@ apply plugin: 'war'
 version = '0.1'
 sourceCompatibility = '1.7'
 
-springVersion = '3.1.0.BUILD-SNAPSHOT'
+//springVersion = '3.1.0.BUILD-SNAPSHOT'
+springVersion = '3.1.0.RC1'
 slf4jVersion = '1.6.1'
 
 //deployPath = '/home/asangpet/springsource/vfabric-tc-server-developer-2.6.0.RELEASE/tactic/webapps'
@@ -13,7 +14,7 @@ deployPath = '/home/asangpet/apps/apache-tomcat-7.0.19/webapps'
 
 repositories {
     mavenCentral()
-    mavenRepo urls: 'http://maven.springframework.org/snapshot'
+    //mavenRepo urls: 'http://maven.springframework.org/snapshot'
 	mavenRepo urls: 'http://maven.springframework.org/milestone'
 	mavenRepo urls: 'http://download.java.net/maven/2'
     flatDir name: 'localRepository', dirs: file('lib')
