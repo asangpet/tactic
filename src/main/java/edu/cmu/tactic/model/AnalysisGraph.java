@@ -42,7 +42,7 @@ public class AnalysisGraph extends InstanceGraph {
 	
 	double rawDistThreshold = 0.2;
 	
-	void analyze(Map<String,DiscreteProbDensity> densityMap) {
+	public void analyze(Map<String,DiscreteProbDensity> densityMap) {
 		resetMark();
 		
 		if (root == null) root = nodeList.get(0);
@@ -77,7 +77,7 @@ public class AnalysisGraph extends InstanceGraph {
 		predict(new LinkedHashMap<String, DiscreteProbDensity>());
 	}
 	
-	void predict(Map<String, DiscreteProbDensity> densityMap) {
+	public void predict(Map<String, DiscreteProbDensity> densityMap) {
 		resetMark();
 		
 		if (root == null) root = nodeList.get(0);
@@ -93,7 +93,7 @@ public class AnalysisGraph extends InstanceGraph {
 		predictResponse(root);
 	}
 	
-	void predictTransfer(Map<String, Double> transferMap) {
+	public void predictTransfer(Map<String, Double> transferMap) {
 		resetMark();
 		
 		if (root == null) root = nodeList.get(0);
@@ -224,6 +224,7 @@ public class AnalysisGraph extends InstanceGraph {
 				compositeRespPdf = compResp.get(0).pdf;
 				for (int i=1;i<compResp.size();i++) {
 					compositeRespPdf = compositeRespPdf.tconv(compResp.get(i).pdf);
+					if (compositeRespPdf.rawCount == null) compositeRespPdf.rawCount = new Long(0);
 					compositeRespPdf.rawCount += compResp.get(i).pdf.rawCount / requestCounter.get(i);
 				}
 			}
@@ -303,7 +304,7 @@ public class AnalysisGraph extends InstanceGraph {
 							transfer = new TransferFunction(new double[] { newFit.param[0], newFit.param[1]/inputGev.param[1], newFit.param[2]-inputGev.param[2] },
 											modelTransfer);
 						}
-						log.info("---${node}--- Composite Transfer = ${transfer}");
+						log.info("---{}--- Composite Transfer = {}", node, transfer);
 						transfer.pdf = modelTransfer;						
 						
 						// Recalculate result using transfer
@@ -627,6 +628,8 @@ public class AnalysisGraph extends InstanceGraph {
 				compositeRespPdf = compResp.get(0).pdf;
 				for (int i=1;i<compResp.size();i++) {
 					compositeRespPdf = compositeRespPdf.tconv(compResp.get(i).pdf);
+					if (compositeRespPdf.rawCount == null) compositeRespPdf.rawCount = new Long(0);
+					if (compResp.get(i).pdf.rawCount == null) compResp.get(i).pdf.rawCount = new Long(0);
 					compositeRespPdf.rawCount += compResp.get(i).pdf.rawCount / requestCounter.get(i);
 				}
 			}
@@ -731,5 +734,12 @@ public class AnalysisGraph extends InstanceGraph {
 		}
 	}
 
+	public void setLog(Logger log) {
+		this.log = log;
+	}
+	
+	public void setMatlab(MatlabUtility matlab) {
+		this.matlab = matlab;
+	}
 		
 }

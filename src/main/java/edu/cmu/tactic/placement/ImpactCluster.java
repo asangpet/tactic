@@ -16,6 +16,10 @@ public class ImpactCluster extends Cluster {
 		super(name);		
 	}
 	
+	public void setLog(Logger log) {
+		this.log = log;
+	}
+	
 	public void place() {
 		// Best-fit impact placement
 		

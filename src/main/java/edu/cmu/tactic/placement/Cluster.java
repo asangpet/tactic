@@ -43,16 +43,29 @@ public abstract class Cluster extends Entity {
 		return this;
 	}
 	
+	public Cluster addHost(String name) {
+		Host host = new Host(name);
+		return add(host);
+	}
+	
 	public Cluster add(VirtualMachine vm) {
 		vms.put(vm.getName(), vm);
 		return this;
+	}
+	
+	public Cluster addVm(String vmName, Service service, String... components) {
+		VirtualMachine vm = new VirtualMachine(vmName);
+		for (String comp:components) {
+			vm.add(service.getComponent(comp));
+		}
+		return this.add(vm);
 	}
 	
 	public ListMultimap<Host, VirtualMachine> getMapping() {
 		return mapping;
 	}
 	
-	public Service getServices(String serviceName) {
+	public Service getService(String serviceName) {
 		return services.get(serviceName);
 	}
 	

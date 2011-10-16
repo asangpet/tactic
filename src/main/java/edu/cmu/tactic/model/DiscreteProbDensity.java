@@ -571,7 +571,15 @@ public class DiscreteProbDensity {
 		}
 		return result;
 	}
-
+	
+	public DiscreteProbDensity setRaw(long raw) {
+		this.rawCount = raw;
+		return this;
+	}
+	
+	public double[] getPdf() {
+		return pdf;
+	}
 	
 	public static void main(String[] args) {
 		DiscreteProbDensity dpd = new DiscreteProbDensity(10, 0, 100, 0);

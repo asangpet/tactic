@@ -1,7 +1,6 @@
 package edu.cmu.tactic.builder;
 
 import edu.cmu.tactic.model.AsynchronousDependency;
-import edu.cmu.tactic.model.Component;
 import edu.cmu.tactic.model.Service;
 import edu.cmu.tactic.placement.Cluster;
 import edu.cmu.tactic.placement.Host;
@@ -13,34 +12,25 @@ public class Builder {
 		return builder;
 	}
 	
-	public static ServiceBuilder comp(String name) {
+	public static ServiceBuilder newComp(String name) {
 		ServiceBuilder builder = new ServiceBuilder(name, name);
 		return builder;		
 	}
 	
-	public static ServiceBuilder async(String name) {
+	public static ServiceBuilder newAsync(String name) {
 		ServiceBuilder builder = new ServiceBuilder(name, name);
 		builder.rootDependency = AsynchronousDependency.class;
 		return builder;		
 	}
 	
 	public Service webServiceBuilder() {
-		/*
-		Service webService = new Service("webservice");
-		webService.add(new Component("proxy"))
-				.add(new Component("app"))
-				.add(new Component("db"))
-				.add(new Component("cache"))
-				.add(new Component("storage"));
-		*/
-		
 		Service webService = Builder.buildService("webservice","root")
 			.dist("lb1","lb2")
 			.dist("proxy1","proxy2","proxy3")
 			.match("app1","app2","app3").each(
-				comp("db1"),
-				comp("searcher").dist("search1","search2","search3"),
-				async("log1")
+				newComp("db1"),
+				newComp("searcher").dist("search1","search2","search3"),
+				newAsync("log1")
 			);
 		
 		return webService;
@@ -70,6 +60,21 @@ public class Builder {
 		main.add(vm1).add(vm2).add(vm3).add(vm4).add(vm5).add(vm6).add(vm7).add(vm8).add(vm9).add(vm10)
 			.add(vm11).add(vm12).add(vm13).add(vm14);
 		
+		return main;
+	}
+	
+	public Service simpleServiceBuilder() {
+		Service simpleService = Builder.buildService("simple","web")
+				.comp("app").comp("db").build();
+		return simpleService;
+	}
+	
+	public Cluster simpleClusterBuilder(Cluster main) {
+		Service simpleService = simpleServiceBuilder();
+		main.addHost("host1").addHost("host2").add(simpleService);
+		main.addVm("vm1", simpleService, "web");
+		main.addVm("vm2", simpleService, "app");
+		main.addVm("vm3", simpleService, "db");
 		return main;
 	}
 	

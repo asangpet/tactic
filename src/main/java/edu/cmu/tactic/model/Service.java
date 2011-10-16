@@ -3,8 +3,6 @@ package edu.cmu.tactic.model;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 import com.google.common.collect.LinkedListMultimap;
@@ -18,9 +16,6 @@ import com.google.common.collect.LinkedListMultimap;
  * service = collection of < components > + a root component
  * component = entity (has a name) + a collection of < dependencies >
  * dependency = relationship type + a collection of < components >
- * 
- * TODO: We also need to implement a service builder which will compose a dependency graph
- * for the components belonging to the service
  * 
  * TODO: Down-grade the dependencies from being a full service to become a simple relationship between
  * the components.
@@ -50,7 +45,7 @@ public class Service extends Entity {
 	
 	// Get the graph which is ready to analyze 
 	// (expanded + assign traffic filter for each link)
-	AnalysisGraph getAnalysisGraph(boolean reset) {
+	public AnalysisGraph getAnalysisGraph(boolean reset) {
 		if (analysisGraph == null && !reset) {
 			analysisGraph = getInstanceGraph().createNewInstance();
 			// TODO: Implement graph transformation template
@@ -64,18 +59,10 @@ public class Service extends Entity {
 		return analysisGraph;
 	}
 	
-	AnalysisGraph getAnalysisGraph() {
+	public AnalysisGraph getAnalysisGraph() {
 		return getAnalysisGraph(false);
 	}
 		
-	private class NodeTemplate {
-		String type;
-		Node node;
-		public NodeTemplate(String type, Node node) {
-			this.type = type;
-			this.node = node;
-		}
-	}
 	// apply relationship transform based on node type
 	// TODO: should extract out as plugin
 	/*

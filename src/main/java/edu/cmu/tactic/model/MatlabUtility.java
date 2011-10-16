@@ -45,7 +45,7 @@ public class MatlabUtility {
 	}
 	*/
 	
-	DiscreteProbDensity filter(DiscreteProbDensity a,DiscreteProbDensity b) {
+	public DiscreteProbDensity filter(DiscreteProbDensity a,DiscreteProbDensity b) {
 		DiscreteProbDensity result = new DiscreteProbDensity(a.numSlots,a.min,a.max,a.offset);
 		double[] matlabResult = MxFunction.imfilter(a.pdf, b.pdf);
 		result.pdf = matlabResult;
@@ -53,7 +53,7 @@ public class MatlabUtility {
 		return result;
 	}
 	
-	DiscreteProbDensity deconvreg(DiscreteProbDensity a,DiscreteProbDensity b) {
+	public DiscreteProbDensity deconvreg(DiscreteProbDensity a,DiscreteProbDensity b) {
 		DiscreteProbDensity result = new DiscreteProbDensity(a.numSlots,a.min,a.max,a.offset);
 		double[] matlabResult = MxFunction.deconvreg(a.pdf, b.pdf);
 		result.pdf = matlabResult;
@@ -63,7 +63,7 @@ public class MatlabUtility {
 	
 	int rawfitcount = 0;
 	int totalfitcount = 0;
-	ParametricDensity getGevParamFit(DiscreteProbDensity a, double[] raw, Double shape) {
+	public ParametricDensity getGevParamFit(DiscreteProbDensity a, double[] raw, Double shape) {
 		DiscreteProbDensity result = new DiscreteProbDensity(a.numSlots,a.min,a.max,a.offset);
 		double[] myfit = null;
 		if (raw != null) {
@@ -87,14 +87,14 @@ public class MatlabUtility {
 		log.info("***** Fitting raw: {} / {} : total", rawfitcount, totalfitcount);
 		return new ParametricDensity(result.normalize(), myfit);
 	}
-	ParametricDensity getGevParamFit(DiscreteProbDensity a, double[] raw) {
+	public ParametricDensity getGevParamFit(DiscreteProbDensity a, double[] raw) {
 		return getGevParamFit(a, raw, null);
 	}
-	ParametricDensity getGevParamFit(DiscreteProbDensity a) {
+	public ParametricDensity getGevParamFit(DiscreteProbDensity a) {
 		return getGevParamFit(a, null, null);
 	}
 	
-	ParametricDensity getGpParamFit(DiscreteProbDensity a) {
+	public ParametricDensity getGpParamFit(DiscreteProbDensity a) {
 		DiscreteProbDensity result = new DiscreteProbDensity(a.numSlots,a.min,a.max,a.offset);
 		double[] rawData = a.generateRaw();
 		double[] positiveData = new double[rawData.length];
@@ -114,7 +114,7 @@ public class MatlabUtility {
 		return new ParametricDensity(result.normalize(), new double[] {myfit[0],myfit[1],(double)0});
 	}
 	
-	ParametricDensity getNormParamFit(DiscreteProbDensity a) {
+	public ParametricDensity getNormParamFit(DiscreteProbDensity a) {
 		DiscreteProbDensity result = new DiscreteProbDensity(a.numSlots,a.min,a.max,a.offset);
 		double[] myfit = MxFunction.normfit(a.generateRaw());
 		int start = rangeinterval/2;
@@ -123,28 +123,28 @@ public class MatlabUtility {
 		return new ParametricDensity(result.normalize(), new double[] {myfit[0],myfit[1],(double)0} );
 	}
 
-	DiscreteProbDensity movingAverage(DiscreteProbDensity a, double span) {
+	public DiscreteProbDensity movingAverage(DiscreteProbDensity a, double span) {
 		DiscreteProbDensity result = new DiscreteProbDensity(a.numSlots,a.min,a.max,a.offset);
 		double[] matlabResult = MxFunction.smooth(a.pdf, span);
 		result.pdf = matlabResult;
 		return result.normalize();
 	}
 	
-	DiscreteProbDensity gev(double k,double scale,double location) {
+	public DiscreteProbDensity gev(double k,double scale,double location) {
 		DiscreteProbDensity result = new DiscreteProbDensity(maxTime/rangeinterval,0,maxTime,offset);
 		int start = rangeinterval / 2;
 		double[] matlabResult = MxFunction.gevpdf(start,maxTime-rangeinterval+start,rangeinterval,k,scale,location);
 		result.pdf = matlabResult;
 		return result.normalize();
 	}
-	DiscreteProbDensity gp(double k,double scale,double location) {
+	public DiscreteProbDensity gp(double k,double scale,double location) {
 		DiscreteProbDensity result = new DiscreteProbDensity(maxTime / rangeinterval,0,maxTime,offset);
 		int start = rangeinterval/2;
 		double[] matlabResult = MxFunction.gppdf(start,maxTime-rangeinterval+start,rangeinterval,k,scale,location);
 		result.pdf = matlabResult;
 		return result.normalize();
 	}
-	DiscreteProbDensity norm(double mean,double std,double extra) {
+	public DiscreteProbDensity norm(double mean,double std,double extra) {
 		DiscreteProbDensity result = new DiscreteProbDensity(maxTime/rangeinterval,0,maxTime,offset);
 		int start = rangeinterval/2;
 		double[] matlabResult = MxFunction.normpdf(start,maxTime-rangeinterval+start,rangeinterval,mean,std);
@@ -152,14 +152,14 @@ public class MatlabUtility {
 		return result.normalize();
 	}
 
-	DiscreteProbDensity gaussian(double mean,double sd) {
+	public DiscreteProbDensity gaussian(double mean,double sd) {
 		DiscreteProbDensity result = new DiscreteProbDensity(maxTime / rangeinterval,0,maxTime,offset);
 		double[] matlabResult = MxFunction.normpdf(0, maxTime-rangeinterval, rangeinterval, mean, sd);
 		result.pdf = matlabResult;
 		return result;
 	}
 	
-	DiscreteProbDensity multiDistribute(List<DiscreteProbDensity> pdfVector,List<Double> probVector) {
+	public DiscreteProbDensity multiDistribute(List<DiscreteProbDensity> pdfVector,List<Double> probVector) {
 		DiscreteProbDensity initPdf = pdfVector.get(0);
 		DiscreteProbDensity result = new DiscreteProbDensity(initPdf.numSlots,initPdf.min,initPdf.max,offset);
 		result.raw = null;

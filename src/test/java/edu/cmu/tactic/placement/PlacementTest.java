@@ -65,7 +65,7 @@ public class PlacementTest {
 		ObjectWriter writer = mapper.defaultPrettyPrintingWriter();
 		cluster.place();
 		log.info("Test random cluster");
-		System.out.println(writer.writeValueAsString(cluster));		
+		System.out.println(writer.writeValueAsString(cluster));
 	}
 
 	@Test
@@ -77,8 +77,9 @@ public class PlacementTest {
 		cluster.place();
 		System.out.println(writer.writeValueAsString(cluster));
 		
-		Service webService = cluster.getServices("webservice");
-		System.out.println(webService);
+		Service webService = cluster.getService("webservice");
+		log.info(webService.toString());
+		log.info(writer.writeValueAsString(webService.getAnalysisGraph().json()));
 	}
 	
 	/*

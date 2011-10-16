@@ -40,6 +40,19 @@ public class ServiceBuilder extends Builder {
 		return this;
 	}
 	
+	public ServiceBuilder comp(String... names) {
+		LinkedHashSet<Component> activeComponents = new LinkedHashSet<Component>();
+		for (String name:names) {
+			for (Component comp:currentComponents) {
+				Component upstream = servicePrototype.addComponent(name);
+				servicePrototype.add(new CompositionDependency(comp,upstream));
+				activeComponents.add(upstream);
+			}
+		}
+		currentComponents = activeComponents;
+		return this;
+	}
+	
 	public ServiceBuilder match(String... names) {
 		LinkedHashSet<Component> activeComponents = new LinkedHashSet<Component>();
 		int idx = 0;
@@ -66,6 +79,10 @@ public class ServiceBuilder extends Builder {
 			}
 		}
 		return this;
+	}
+	
+	public Service build() {
+		return servicePrototype;
 	}
 	
 	private void addBuilder(ServiceBuilder builder) {

@@ -25,7 +25,7 @@ public class InstanceGraph {
 		return graph;
 	}
 	
-	Node getNode(String name) {
+	public Node getNode(String name) {
 		return nodes.get(name);
 	}
 	
@@ -108,7 +108,7 @@ public class InstanceGraph {
 		node.mark = true;
 	}
 	
-	HashMap<String, List<HashMap<String,Object>>> json() {
+	public HashMap<String, List<HashMap<String,Object>>> json() {
 		HashMap<String, List<HashMap<String,Object>>> jsonGraph = new HashMap<String, List<HashMap<String,Object>>>();
 		jsonGraph.put("nodes", new ArrayList<HashMap<String,Object>>(nodes.size()));
 		jsonGraph.put("links", new ArrayList<HashMap<String,Object>>(links.size()));
@@ -117,7 +117,7 @@ public class InstanceGraph {
 		List<HashMap<String,Object>> jnodes = jsonGraph.get("nodes");
 		for (Node it:nodeList) {
 			HashMap<String,Object> result = new LinkedHashMap<String,Object>();
-			result.put("nodeName", it.name);
+			result.put("name", it.name);
 			result.put("group", 1);
 			result.put("mark", it.mark);
 			if (it.x != null) result.put("x", it.x);

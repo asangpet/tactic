@@ -44,4 +44,24 @@ public class ParametricDensity {
 		this.param = d.param;
 	}
 	
+	public DiscreteProbDensity getPdf() {
+		return pdf;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		if (param != null) {
+			for (int i=0;i<param.length;i++) {
+				buf.append(param[i]+",");
+			}
+		}
+		StringBuffer inbuf = new StringBuffer();
+		if (inputparam!= null) {
+			for (int i=0;i<inputparam.length;i++) {
+				inbuf.append(inputparam[i]+",");
+			}
+		}
+		return "ParametricDensity - count {"+rawCount+"} - param {"+buf.toString()+"} - input - {"+inbuf+"}";		
+	}
 }

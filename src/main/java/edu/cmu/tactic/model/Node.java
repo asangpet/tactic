@@ -37,4 +37,8 @@ public class Node {
 	public String toString() {
 		return name;
 	}
+	
+	public ParametricDensity getAnalysisResponse() {
+		return analysisResponse;
+	}
 }
