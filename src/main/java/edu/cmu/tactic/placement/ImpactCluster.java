@@ -10,14 +10,8 @@ import org.slf4j.Logger;
 import edu.cmu.tactic.model.Component;
 
 public class ImpactCluster extends Cluster {
-	@Inject Logger log;
-	
 	public ImpactCluster(String name) {
 		super(name);		
-	}
-	
-	public void setLog(Logger log) {
-		this.log = log;
 	}
 	
 	public void place() {
@@ -80,5 +74,22 @@ public class ImpactCluster extends Cluster {
 			mapping.put(host, vm);
 		}
 	}
+
+	public void placeRandom() {
+		mapping.clear();
+		
+		Host[] hostArray = new Host[hosts.size()];
+		hostArray = hosts.values().toArray(hostArray);
+		for (Host host:hosts.values()) {
+			host.reset();
+		}
+			
+		for (VirtualMachine vm:vms.values()) {
+			int pick = (int)Math.round(Math.random()*(hostArray.length-1));
+			mapping.put(hostArray[pick], vm);
+			hostArray[pick].add(vm);
+		}
+	}
+	
 	
 }

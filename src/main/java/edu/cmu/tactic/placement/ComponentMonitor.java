@@ -56,7 +56,7 @@ public class ComponentMonitor extends Entity {
 	
 	public void findImpact() {
 		for (Component comp:components.values()) {
-			comp.setImpact(0.1);
+			if (comp.getImpact() < 0) comp.setImpact(0.1);
 		}		
 	}
 }
