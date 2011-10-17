@@ -14,6 +14,11 @@ public class Host extends Entity {
 		tenants = new ArrayList<VirtualMachine>();
 	}
 	
+	public void reset() {
+		load = 0;
+		tenants = new ArrayList<VirtualMachine>();
+	}
+	
 	public void add(VirtualMachine vm) {
 		tenants.add(vm);
 	}

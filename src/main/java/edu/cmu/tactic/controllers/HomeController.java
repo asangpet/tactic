@@ -1,11 +1,15 @@
 package edu.cmu.tactic.controllers;
 
 import java.text.DateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
@@ -19,6 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.cmu.tactic.data.Response;
+import edu.cmu.tactic.placement.Host;
+import edu.cmu.tactic.placement.VirtualMachine;
 import edu.cmu.tactic.services.AnalysisService;
 import edu.cmu.tactic.services.ResponseDataService;
 
@@ -66,4 +72,19 @@ public class HomeController {
 	public @ResponseBody Map<String, double[]> analyzeResponse(Model model) {
 		return analyzer.analyze();
 	}
+	
+	@RequestMapping(value = "/place", produces="application/json") 
+	public @ResponseBody Map<String, List<String>> placeVm(Model model) {
+		Map<Host,Collection<VirtualMachine>> result = analyzer.calculatePlacement();
+		Map<String,List<String>> output = new LinkedHashMap<String, List<String>>();
+		for (Host host:result.keySet()) {
+			List<String> vmList = new LinkedList<String>();
+			for (VirtualMachine vm:result.get(host)) {
+				vmList.add(vm.getName());
+			}
+			output.put(host.getName(), vmList);
+		}
+		return output;
+	}
+	
 }

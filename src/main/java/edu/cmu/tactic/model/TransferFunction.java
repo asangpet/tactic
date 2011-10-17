@@ -29,4 +29,8 @@ public class TransferFunction {
 		this.linkparam = linkparam;
 		this.nonparamPdf = nonparamPdf;
 	}
+	
+	public DiscreteProbDensity getPdf() {
+		return pdf;
+	}
 }

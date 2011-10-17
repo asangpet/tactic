@@ -41,4 +41,12 @@ public class Node {
 	public ParametricDensity getAnalysisResponse() {
 		return analysisResponse;
 	}
+	
+	public DiscreteProbDensity getServerResponse() {
+		return serverResponse;
+	}
+	
+	public NodeModel getModel() {
+		return model;
+	}
 }

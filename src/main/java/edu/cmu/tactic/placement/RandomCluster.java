@@ -6,6 +6,8 @@ public class RandomCluster extends Cluster {
 	}
 	
 	public void place() {
+		mapping.clear();
+		
 		Host[] hostArray = new Host[hosts.size()];
 		hostArray = hosts.values().toArray(hostArray);
 			

@@ -20,4 +20,9 @@ public class NodeModel {
 	public NodeModel(ParametricDensity outputResponse) {
 		this.outputResponse = outputResponse;
 	}
+	
+	public TransferFunction getTransfer() {
+		return transfer;
+	}
+
 }

@@ -66,9 +66,9 @@ public class AnalysisGraph extends InstanceGraph {
 						if (parent.serverResponse != null)
 							uptierCount += parent.serverResponse.rawCount;
 					}
-					log.debug("------Estimating tier request {} vs {}",uptierCount,node.serverResponse.rawCount);
 					if (uptierCount > 0) node.requestCount = Math.round(node.serverResponse.rawCount / uptierCount);
 					if (node.requestCount < 1) node.requestCount = 1;
+					log.debug("------Estimating tier request count {} - {}",node.name,node.requestCount);					
 				}
 			}
 		}
@@ -227,6 +227,7 @@ public class AnalysisGraph extends InstanceGraph {
 					if (compositeRespPdf.rawCount == null) compositeRespPdf.rawCount = new Long(0);
 					compositeRespPdf.rawCount += compResp.get(i).pdf.rawCount / requestCounter.get(i);
 				}
+				log.debug("Composite analyzed avg {}, compResp {}",compositeRespPdf.average(), compResp.size());
 			}
 			
 			// next we calculate the response from distribution link
@@ -304,8 +305,8 @@ public class AnalysisGraph extends InstanceGraph {
 							transfer = new TransferFunction(new double[] { newFit.param[0], newFit.param[1]/inputGev.param[1], newFit.param[2]-inputGev.param[2] },
 											modelTransfer);
 						}
-						log.info("---{}--- Composite Transfer = {}", node, transfer);
 						transfer.pdf = modelTransfer;						
+						log.info("---{}--- Composite Transfer = {}", node, transfer.pdf.mode());
 						
 						// Recalculate result using transfer
 						node.model.transfer = transfer;
@@ -632,6 +633,7 @@ public class AnalysisGraph extends InstanceGraph {
 					if (compResp.get(i).pdf.rawCount == null) compResp.get(i).pdf.rawCount = new Long(0);
 					compositeRespPdf.rawCount += compResp.get(i).pdf.rawCount / requestCounter.get(i);
 				}
+				//log.debug("Composite size {}, avg {}",compResp.size(),compositeRespPdf.average());
 			}
 			
 			// next we calculate the response from distribution link
@@ -667,7 +669,7 @@ public class AnalysisGraph extends InstanceGraph {
 							node.model.transfer.param[1]*inputGev.param[1],
 							node.model.transfer.param[2]+inputGev.param[2]};
 					}
-					
+					log.debug("Composite input avg {}",inputGev.pdf.average());
 					DiscreteProbDensity predictPdf = getPdf(newParam[0],newParam[1],newParam[2]);
 					if (nonparamPredict) {
 						if (node.transferEdited) {
@@ -676,6 +678,7 @@ public class AnalysisGraph extends InstanceGraph {
 							predictPdf = compositeRespPdf.filter(node.model.transfer.nonparamPdf).ensurePositive().cutoff(node.model.cutoff);
 						}
 					}
+					log.debug("Predicted composite output avg {}",predictPdf.average());
 					node.analysisResponse = new ParametricDensity(predictPdf, newParam, inputGev.param);
 				} else {
 					log.debug("Cannot find composite model for {}, forwarding result",node);

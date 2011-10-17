@@ -22,6 +22,8 @@ public class ImpactCluster extends Cluster {
 	
 	public void place() {
 		// Best-fit impact placement
+		// reset map
+		mapping.clear();
 		
 		// Find average component co-arrival
 		componentMonitor.findCoarrival();
@@ -49,7 +51,7 @@ public class ImpactCluster extends Cluster {
 		
 		// Clean up host tenants
 		for (Host host:hosts.values()) {
-			host.load = 0;
+			host.reset();
 		}
 		
 		// Greedily load balancing the host based on vm score
