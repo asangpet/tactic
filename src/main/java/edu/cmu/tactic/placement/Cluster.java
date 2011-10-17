@@ -101,6 +101,7 @@ public abstract class Cluster extends Entity {
 			}
 			
 			for (Component comp:components) {
+				log.debug("serviceMap {} ",serviceMap.get(comp));
 				double compCoArrival = comp.getCoarrival(serviceMap.get(comp), components);
 				expectedImpact.put(comp,comp.getImpact() * compCoArrival);
 			}

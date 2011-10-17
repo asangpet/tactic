@@ -41,11 +41,11 @@ public class Component extends Entity {
 		for (Component comp:components) {
 			if (!comp.equals(this)) {
 				count++;
-				Component test = primary.getComponent(comp.getName()); 
-				if (test.equals(comp)) {
-					mean += 0.8;
+				Component test = primary.getComponent(comp.getName()); 				
+				if (test!=null && test.equals(comp)) {
+					mean += 0.8 + 0.1*(components.size()-1);
 				} else {
-					mean += 0.3;
+					mean += 0.3 + 0.1*(components.size()-1);
 				}
 			}
 		}

@@ -14,7 +14,6 @@ import edu.cmu.tactic.model.Service;
 import edu.cmu.tactic.placement.Cluster;
 import edu.cmu.tactic.placement.Host;
 import edu.cmu.tactic.placement.ImpactCluster;
-import edu.cmu.tactic.placement.RandomCluster;
 import edu.cmu.tactic.placement.VirtualMachine;
 
 @org.springframework.stereotype.Service
@@ -32,7 +31,7 @@ public class AnalysisService {
 		((ImpactCluster)cluster).setLog(log);
 		
 		Builder builder = new Builder();
-		cluster = builder.simpleClusterBuilder(cluster);
+		cluster = builder.multipleSimpleClusterBuilder(cluster);
 		
 		service = cluster.getService("simple");
 		return service;
@@ -45,14 +44,12 @@ public class AnalysisService {
 		return graph.getNode(root).getAnalysisResponse().getPdf().mode();
 	}
 	
-	void calculateImpact() {
-		setup();
-
-		double origin = graph.getNode("web").getAnalysisResponse().getPdf().mode();
+	void calculateImpact(String id) {
+		double origin = graph.getNode("web"+id).getAnalysisResponse().getPdf().mode();
 		
 		Map<Component, Double> impact = new LinkedHashMap<Component, Double>();
 		for (Component comp:service.getComponents()) {
-			impact.put(comp, findImpact(graph, 1d, comp.getName(), "web"));
+			impact.put(comp, findImpact(graph, 1d, comp.getName(), "web"+id));
 		}
 		
 		log.info("    origin - {}",origin);
@@ -63,18 +60,28 @@ public class AnalysisService {
 	}
 	
 	public Map<Host,Collection<VirtualMachine>> calculatePlacement() {
-		calculateImpact();
-		((ImpactCluster)cluster).placeRandom();
-		Map<Service,Double> impact = cluster.evaluate();
+		getDefaultService();
+		for (int id=0;id<10;id++) {
+			setup(""+id);
+			calculateImpact(""+id);
+		}
 		
-		for (Service svc:impact.keySet()) {
-			log.info("Impact {} = {}",svc.getName(), impact.get(svc));
+		for (int i=0;i<5;i++) {
+			log.debug("Place iteration {}",i);
+			((ImpactCluster)cluster).placeRandom();
+			Map<Service,Double> impact = cluster.evaluate();
+		
+			for (Service svc:impact.keySet()) {
+				log.info("Impact {} = {}",svc.getName(), impact.get(svc));
+			}
 		}
 		return cluster.getMapping().asMap();
 	}
 	
-	void setup() {
-		graph = getDefaultService().getAnalysisGraph();
+	void setup(String id) {
+		service = cluster.getService("simple"+id);
+		log.debug("{} - {}","simple"+id, service);
+		graph = service.getAnalysisGraph();
 		graph.setLog(log);
 		graph.setMatlab(matlab);
 		
@@ -83,19 +90,20 @@ public class AnalysisService {
 		//densityMap.put("app", matlab.gaussian(400, 10).setRaw(100));
 		//densityMap.put("db", matlab.gaussian(30, 10).setRaw(1000));
 		
-		densityMap.put("web", matlab.gev(0.2, 100, 1200).setRaw(100));
-		densityMap.put("app", matlab.gev(0.2, 100, 1100).setRaw(100));
-		densityMap.put("db", matlab.gev(0.2, 100, 200).setRaw(500));
+		densityMap.put("web"+id, matlab.gev(0.2, 100, 1200).setRaw(100));
+		densityMap.put("app"+id, matlab.gev(0.2, 100, 1100).setRaw(100));
+		densityMap.put("db"+id, matlab.gev(0.2, 100, 200).setRaw(500));
+		/*
 		log.info("--pre-web - {}",densityMap.get("web").average());
 		log.info("--pre-app - {}",densityMap.get("app").average());
 		log.info("--pre-db  - {}",densityMap.get("db").average());
-		
+		*/
 		graph.analyze(densityMap);
 	}
 	
 	public Map<String, double[]> analyze() {
 		Map<String, double[]> result = new LinkedHashMap<String, double[]>();
-		setup();
+		setup("");
 		
 		result.put("oweb", graph.getNode("web").getServerResponse().getPdf());
 		result.put("oapp", graph.getNode("app").getServerResponse().getPdf());

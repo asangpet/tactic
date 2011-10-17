@@ -63,18 +63,33 @@ public class Builder {
 		return main;
 	}
 	
-	public Service simpleServiceBuilder() {
-		Service simpleService = Builder.buildService("simple","web")
-				.comp("app").comp("db").build();
+	public Service simpleServiceBuilder(String id) {
+		Service simpleService = Builder.buildService("simple"+id,"web"+id)
+				.comp("app"+id).comp("db"+id).build();
 		return simpleService;
 	}
 	
 	public Cluster simpleClusterBuilder(Cluster main) {
-		Service simpleService = simpleServiceBuilder();
+		Service simpleService = simpleServiceBuilder("");
 		main.addHost("host1").addHost("host2").add(simpleService);
 		main.addVm("vm1", simpleService, "web");
 		main.addVm("vm2", simpleService, "app");
 		main.addVm("vm3", simpleService, "db");
+		return main;
+	}
+	
+	public Cluster multipleSimpleClusterBuilder(Cluster main) {
+		int vm = 0;
+		for (int id=0;id<10;id++) {			
+			Service simpleService = simpleServiceBuilder(""+id);
+			main.add(simpleService);
+			main.addVm("vm"+(++vm), simpleService, "web"+id);
+			main.addVm("vm"+(++vm), simpleService, "app"+id);
+			main.addVm("vm"+(++vm), simpleService, "db"+id);			
+		}
+		for (int host=1;host<=9;host++) {
+			main.addHost("host"+host);
+		}
 		return main;
 	}
 	
