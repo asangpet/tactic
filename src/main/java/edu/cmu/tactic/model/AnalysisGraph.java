@@ -224,7 +224,7 @@ public class AnalysisGraph extends InstanceGraph {
 				compositeRespPdf = compResp.get(0).pdf;
 				for (int i=1;i<compResp.size();i++) {
 					compositeRespPdf = compositeRespPdf.tconv(compResp.get(i).pdf);
-					if (compositeRespPdf.rawCount == null) compositeRespPdf.rawCount = new Long(0);
+					if (compositeRespPdf.rawCount == null) compositeRespPdf.rawCount = 0L;
 					compositeRespPdf.rawCount += compResp.get(i).pdf.rawCount / requestCounter.get(i);
 				}
 				log.debug("Composite analyzed avg {}, compResp {}",compositeRespPdf.average(), compResp.size());
@@ -629,8 +629,8 @@ public class AnalysisGraph extends InstanceGraph {
 				compositeRespPdf = compResp.get(0).pdf;
 				for (int i=1;i<compResp.size();i++) {
 					compositeRespPdf = compositeRespPdf.tconv(compResp.get(i).pdf);
-					if (compositeRespPdf.rawCount == null) compositeRespPdf.rawCount = new Long(0);
-					if (compResp.get(i).pdf.rawCount == null) compResp.get(i).pdf.rawCount = new Long(0);
+					if (compositeRespPdf.rawCount == null) compositeRespPdf.rawCount = 0L;
+					if (compResp.get(i).pdf.rawCount == null) compResp.get(i).pdf.rawCount = 0L;
 					compositeRespPdf.rawCount += compResp.get(i).pdf.rawCount / requestCounter.get(i);
 				}
 				//log.debug("Composite size {}, avg {}",compResp.size(),compositeRespPdf.average());

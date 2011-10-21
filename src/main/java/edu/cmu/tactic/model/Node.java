@@ -34,6 +34,11 @@ public class Node {
 	}
 	
 	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
+	@Override
 	public String toString() {
 		return name;
 	}
@@ -48,5 +53,9 @@ public class Node {
 	
 	public NodeModel getModel() {
 		return model;
+	}
+	
+	public String getName() {
+		return name;
 	}
 }

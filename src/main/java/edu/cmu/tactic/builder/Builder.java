@@ -87,7 +87,7 @@ public class Builder {
 			main.addVm("vm"+(++vm), simpleService, "app"+id);
 			main.addVm("vm"+(++vm), simpleService, "db"+id);			
 		}
-		for (int host=1;host<=9;host++) {
+		for (int host=1;host<=6;host++) {
 			main.addHost("host"+host);
 		}
 		return main;

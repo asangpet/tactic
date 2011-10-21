@@ -15,6 +15,11 @@ public class Tier {
 		return (obj instanceof Tier) && ((Tier)obj).name.equals(name);
 	}
 	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
 	public String toString() {
 		return name;
 	}

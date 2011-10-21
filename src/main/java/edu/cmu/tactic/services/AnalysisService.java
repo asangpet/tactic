@@ -66,9 +66,9 @@ public class AnalysisService {
 			calculateImpact(""+id);
 		}
 		
-		for (int i=0;i<5;i++) {
+		for (int i=0;i<1;i++) {
 			log.debug("Place iteration {}",i);
-			((ImpactCluster)cluster).placeRandom();
+			((ImpactCluster)cluster).place();
 			Map<Service,Double> impact = cluster.evaluate();
 		
 			for (Service svc:impact.keySet()) {

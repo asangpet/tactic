@@ -55,9 +55,9 @@ public class InstanceGraph {
 	
 	InstanceGraph bindCoordinate(List<Point> colist) {
 		for (Point it:colist) {
-			if (nodes.get(it.node)!=null) {
-				nodes.get(it.node).x = it.x;
-				nodes.get(it.node).y = it.y;
+			if (nodes.get(it.node.getName())!=null) {
+				nodes.get(it.node.getName()).x = it.x;
+				nodes.get(it.node.getName()).y = it.y;
 			}
 		}
 		return this;

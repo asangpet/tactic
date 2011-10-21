@@ -22,7 +22,7 @@ public class MatlabUtility {
 		
 		// generate rangeArray
 		rangeArray = new double[maxTime/rangeinterval];
-		double start = rangeinterval/2;
+		double start = rangeinterval/2.0;
 		for (int i=0;i<rangeArray.length;i++) {
 			rangeArray[i] = start;
 			start = start+rangeinterval;
