@@ -5,6 +5,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -12,9 +14,11 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class TacticWebAppInitializer implements WebApplicationInitializer {
+	Logger log = LoggerFactory.getLogger(TacticWebAppInitializer.class);
+	
 	@Override
 	public void onStartup(ServletContext sc) throws ServletException {
-		System.out.println("-------STAAAAARTTTT------------");
+		log.info("----TACTIC Application Server Started----");
 		
 		AnnotationConfigWebApplicationContext root = new AnnotationConfigWebApplicationContext();
 		root.scan("edu.cmu.tactic.config");

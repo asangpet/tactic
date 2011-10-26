@@ -5,18 +5,16 @@ apply plugin: 'war'
 version = '0.1'
 sourceCompatibility = '1.7'
 
-//springVersion = '3.1.0.BUILD-SNAPSHOT'
 springVersion = '3.1.0.RC1'
-slf4jVersion = '1.6.1'
 
-//deployPath = '/home/asangpet/springsource/vfabric-tc-server-developer-2.6.0.RELEASE/tactic/webapps'
 deployPath = '/home/asangpet/apps/apache-tomcat-7.0.19/webapps'
 
 repositories {
     mavenCentral()
     //mavenRepo urls: 'http://maven.springframework.org/snapshot'
 	mavenRepo urls: 'http://maven.springframework.org/milestone'
-	mavenRepo urls: 'http://download.java.net/maven/2'
+	mavenRepo urls: 'http://download.java.net/maven/2'	
+	mavenRepo urls: 'http://oss.sonatype.org/content/repositories/releases'
     flatDir name: 'localRepository', dirs: file('lib')
     //mavenRepo urls: 'http://repository.springsource.com/maven/bundles/external'
 }
@@ -33,10 +31,8 @@ dependencies {
 	compile group: 'org.thymeleaf', name: 'thymeleaf-spring3', version:'1.1.0'
 	
 	// Logging
-    compile group: 'log4j', name: 'log4j', version: '1.2.16'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
-    compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
-	compile group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4jVersion
+	compile group: 'ch.qos.logback', name: 'logback-classic', version: '0.9.30'
+    compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.6.1'
 	
 	// Servlet
  	compile group: 'javax.inject', name: 'javax.inject', version: '1'
@@ -53,6 +49,8 @@ dependencies {
 	// Test
  	compile group: 'junit', name: 'junit', version: '4.8.2'
  	compile group: 'org.springframework', name: 'spring-test', version:springVersion
+	compile group: 'com.ning', name:'async-http-client', version: '1.6.5'
+	compile group: 'org.jsoup', name:'jsoup', version:'1.6.1'
 	
 	// Misc 
 	compile group: 'com.google.guava', name: 'guava', version: '10.0'
@@ -64,11 +62,6 @@ war {
     from "src/main/java/edu/cmu/tactic/data/repo.xml"
   }
 }
-
-//task deploy(type: Copy) {
-//	into deployPath+"/tactic"
-//	with war
-//}
 
 task deploy(type: Copy, dependsOn: war) {
   //from "build/libs/tactic-${version}.war"
