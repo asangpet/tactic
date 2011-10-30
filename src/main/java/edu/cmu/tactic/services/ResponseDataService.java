@@ -29,9 +29,11 @@ public class ResponseDataService {
 		}
 		
 		log.info("Total record:"+responseRepo.count());
+		/*
 		for (Response r:responseRepo.findAll()) {
 			log.info(r.toString());
 		}
+		*/
 	}
 	
 	public Page<Response> listServer(String ip) {		

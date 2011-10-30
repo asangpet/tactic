@@ -11,12 +11,12 @@ deployPath = '/home/asangpet/apps/apache-tomcat-7.0.19/webapps'
 
 repositories {
     mavenCentral()
-    //mavenRepo urls: 'http://maven.springframework.org/snapshot'
-	mavenRepo urls: 'http://maven.springframework.org/milestone'
-	mavenRepo urls: 'http://download.java.net/maven/2'	
-	mavenRepo urls: 'http://oss.sonatype.org/content/repositories/releases'
+    maven { url 'http://maven.springframework.org/snapshot' }
+	maven { url 'http://maven.springframework.org/milestone' }
+	maven { url 'http://download.java.net/maven/2' }	
+	maven { url 'http://oss.sonatype.org/content/repositories/releases' }
     flatDir name: 'localRepository', dirs: file('lib')
-    //mavenRepo urls: 'http://repository.springsource.com/maven/bundles/external'
+    //maven { urls 'http://repository.springsource.com/maven/bundles/external' }
 }
 
 configurations {
@@ -27,7 +27,7 @@ dependencies {
 	// Spring
 	compile group: 'org.springframework', name: 'spring-webmvc', version:springVersion
     compile group: 'org.springframework', name: 'spring-context', version:springVersion
-	compile group: 'org.springframework.data', name: 'spring-data-mongodb', version:'1.0.0.M4'
+	compile group: 'org.springframework.data', name: 'spring-data-mongodb', version:'1.0.0.M5'
 	compile group: 'org.thymeleaf', name: 'thymeleaf-spring3', version:'1.1.0'
 	
 	// Logging

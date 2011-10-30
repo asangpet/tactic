@@ -31,7 +31,9 @@ public class ResponseDataServiceTest {
 	
 	@Test
 	public void testMongoRepo() throws Exception {
-		service.listServer("192.168.0.106");
+		service.listResponse();
+		//service.listServer("10.0.50.1");
+		
 		//service.listResponse();
 	}
 	

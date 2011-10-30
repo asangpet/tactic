@@ -51,7 +51,7 @@ public class HomeController {
 		String formattedDate = dateFormat.format(date);
 		
 		model.addAttribute("serverTime", formattedDate );
-		model.addAttribute("response", responseData.listServer("192.168.0.106"));
+		model.addAttribute("response", responseData.listServer("10.0.50.1"));
 		return "home";
 	}
 
