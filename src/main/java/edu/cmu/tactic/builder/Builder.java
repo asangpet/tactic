@@ -92,17 +92,5 @@ public class Builder {
 			main.addHost("host"+host);
 		}
 		return main;
-	}
-	
-	public Service cmsServiceBuilder() {
-		Service cmsService = Builder.buildService("drupal", "varnish").comp("bench-drupal").dist("bench-drupal-db","bench-solr").build();
-		return cmsService;
-	}
-	
-	public Cluster cmsClusterBuilder(Cluster main) {
-		Cluster cluster = new ImpactCluster("cms");
-		cluster.add(cmsServiceBuilder()).addHost("amdw6");
-		return cluster;
-	}
-	
+	}	
 }

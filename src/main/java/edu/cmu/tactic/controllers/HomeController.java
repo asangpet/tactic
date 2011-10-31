@@ -63,12 +63,12 @@ public class HomeController {
 	
 	@RequestMapping(value = "/graph", produces="application/json")
 	public @ResponseBody HashMap<String, List<HashMap<String,Object>>> showGraph(Model model) {
-		return analyzer.getInstance("demo").getAnalysisGraph().json();
+		return analyzer.getInstance("cms").getAnalysisGraph().json();
 	}
 	
 	@RequestMapping(value = "/analyze", produces="application/json") 
 	public @ResponseBody Map<String, double[]> analyzeResponse(Model model) {
-		return analyzer.getInstance("demo").analyze();
+		return analyzer.getInstance("cms").analyze();
 	}
 	
 	@RequestMapping(value = "/place", produces="application/json") 

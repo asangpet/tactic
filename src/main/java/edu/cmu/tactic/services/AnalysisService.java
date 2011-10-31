@@ -24,6 +24,15 @@ public class AnalysisService {
 		instances.put("demo",demo);
 	}
 	
+	@PostConstruct
+	public void addContentWebAnalysis() {
+		ContentWebAnalysis cms = new ContentWebAnalysis();
+		cms.setLog(log);
+		cms.setMatlab(matlab);
+		cms.setup();
+		instances.put("cms", cms);
+	}
+	
 	public AnalysisInstance getInstance(String name) {
 		return instances.get(name);
 	}
