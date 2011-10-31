@@ -9,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -65,17 +63,17 @@ public class HomeController {
 	
 	@RequestMapping(value = "/graph", produces="application/json")
 	public @ResponseBody HashMap<String, List<HashMap<String,Object>>> showGraph(Model model) {
-		return analyzer.getDefaultService().getAnalysisGraph().json();
+		return analyzer.getInstance("demo").getAnalysisGraph().json();
 	}
 	
 	@RequestMapping(value = "/analyze", produces="application/json") 
 	public @ResponseBody Map<String, double[]> analyzeResponse(Model model) {
-		return analyzer.analyze();
+		return analyzer.getInstance("demo").analyze();
 	}
 	
 	@RequestMapping(value = "/place", produces="application/json") 
 	public @ResponseBody Map<String, List<String>> placeVm(Model model) {
-		Map<Host,Collection<VirtualMachine>> result = analyzer.calculatePlacement();
+		Map<Host,Collection<VirtualMachine>> result = analyzer.getInstance("demo").calculatePlacement();
 		Map<String,List<String>> output = new LinkedHashMap<String, List<String>>();
 		for (Host host:result.keySet()) {
 			List<String> vmList = new LinkedList<String>();
