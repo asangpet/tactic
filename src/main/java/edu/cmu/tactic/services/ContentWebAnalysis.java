@@ -23,7 +23,10 @@ public class ContentWebAnalysis extends AnalysisInstance {
 		cluster = new ImpactCluster("impact");
 		((ImpactCluster)cluster).setLog(log);
 		
-		service = Builder.buildService("drupal", "varnish").comp("bench-drupal").dist("bench-drupal-db","bench-solr").build();
+		service = Builder.buildService("drupal", "varnish")
+					.comp("bench-drupal")
+					.dist("bench-drupal-db","bench-memcache","bench-solr")
+					.build();
 		cluster.add(service).addHost("amdw6");
 	}
 	
@@ -34,12 +37,12 @@ public class ContentWebAnalysis extends AnalysisInstance {
 		return graph.getNode(root).getAnalysisResponse().getPdf().mode();
 	}
 	
-	void calculateImpact(String id) {
-		double origin = graph.getNode("web"+id).getAnalysisResponse().getPdf().mode();
+	void calculateImpact() {
+		double origin = graph.getNode("varnish").getAnalysisResponse().getPdf().mode();
 		
 		Map<Component, Double> impact = new LinkedHashMap<Component, Double>();
 		for (Component comp:service.getComponents()) {
-			impact.put(comp, findImpact(graph, 1d, comp.getName(), "web"+id));
+			impact.put(comp, findImpact(graph, 1d, comp.getName(), "varnish"));
 		}
 		
 		log.info("    origin - {}",origin);
@@ -80,6 +83,7 @@ public class ContentWebAnalysis extends AnalysisInstance {
 		densityMap.put("bench-drupal", matlab.gev(0.2, 100, 1100).setRaw(100));
 		densityMap.put("bench-drupal-db", matlab.gev(0.2, 100, 200).setRaw(500));
 		densityMap.put("bench-solr", matlab.gev(0.2, 100, 200).setRaw(500));
+		densityMap.put("bench-memcache", matlab.gev(0.2, 100, 200).setRaw(500));
 		graph.analyze(densityMap);
 		
 		Map<String, double[]> result = new LinkedHashMap<String, double[]>();
@@ -88,11 +92,13 @@ public class ContentWebAnalysis extends AnalysisInstance {
 		result.put("odrupal", graph.getNode("bench-drupal").getServerResponse().getPdf());
 		result.put("odb", graph.getNode("bench-drupal-db").getServerResponse().getPdf());		
 		result.put("osolr", graph.getNode("bench-solr").getServerResponse().getPdf());		
+		result.put("ocache", graph.getNode("bench-memcache").getServerResponse().getPdf());		
 		
 		log.info("ovar - {}",graph.getNode("varnish").getAnalysisResponse().getPdf().average());
 		log.info("odrup- {}",graph.getNode("bench-drupal").getAnalysisResponse().getPdf().average());
 		log.info("odb  - {}",graph.getNode("bench-drupal-db").getAnalysisResponse().getPdf().average());
 		log.info("osolr- {}",graph.getNode("bench-solr").getAnalysisResponse().getPdf().average());
+		log.info("ocache- {}",graph.getNode("bench-memcache").getAnalysisResponse().getPdf().average());
 
 		/* Manual shift
 		Map<String, DiscreteProbDensity> transferMap = new LinkedHashMap<String, DiscreteProbDensity>();
@@ -108,11 +114,13 @@ public class ContentWebAnalysis extends AnalysisInstance {
 		log.info("drup- {}",graph.getNode("bench-drupal").getAnalysisResponse().getPdf().average());
 		log.info("db  - {}",graph.getNode("bench-drupal-db").getAnalysisResponse().getPdf().average());
 		log.info("solr- {}",graph.getNode("bench-solr").getAnalysisResponse().getPdf().average());
+		log.info("cache-{}",graph.getNode("bench-memcache").getAnalysisResponse().getPdf().average());
 		
 		result.put("varnish", graph.getNode("varnish").getAnalysisResponse().getPdf().getPdf());
 		result.put("drupal", graph.getNode("bench-drupal").getAnalysisResponse().getPdf().getPdf());
 		result.put("db", graph.getNode("bench-drupal-db").getAnalysisResponse().getPdf().getPdf());
 		result.put("solr", graph.getNode("bench-solr").getAnalysisResponse().getPdf().getPdf());
+		result.put("cache", graph.getNode("bench-memcache").getAnalysisResponse().getPdf().getPdf());
 		
 		return result;
 	}

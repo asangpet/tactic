@@ -4,35 +4,56 @@ import java.io.File;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.io.Files;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
 
 public class GenDrupal {
-	static final int nodeCount = 9000;
-	static final int nodeOffset = 100;
-	static final int numRequest = 10000;
-	static final int requestRate = 10; // Avg # requests per sec
-	static final String frontendURL = "http://10.0.50.1/";
+	int numRequest = 10000;
+	int requestRate = 10; // Avg # requests per sec
+	String prefix = "http://10.0.50.1";
+	Logger log = LoggerFactory.getLogger(GenDrupal.class);
+
+	private AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
+				.setFollowRedirects(true)
+				.build();
+	private AsyncHttpClient client = new AsyncHttpClient(config);
 	
-	static double expRand(double lambda) {
+	double expRand(double lambda) {
 		return Math.log(1-Math.random()) / (-lambda);
 	}
 	
-	public static void main(String[] args) throws Exception {
+	String nextWord() {
+		String[] words = {"illa", "posted", "photo", "vogue", "abbas", "bene", "gilvus", "haero", "iaeceo", "pagus", "praesent", "proprius", "esca", "enim", "gemino", "mauris", "similis", "sudo", "venio", "virtus", "obruo"};
+		return words[(int)(Math.round(Math.random()*words.length)) % words.length];
+	}
+	
+	void generate() throws Exception {
 		Writer w = Files.newWriter(new File("trace/drupal.trace"), Charset.forName("US-ASCII"));
-		Zipf zipf = new Zipf(nodeCount,1);
+		
+		User user = new User(prefix+"/");		
+		user.setClient(client);
+		
 		double ctime = 0;
 		for (int i=0;i<numRequest;i++) {
-			String url = frontendURL;
-			int page = zipf.nextInt();
-			String suffix = "?q=node/"+(page+nodeOffset);
+			String url = prefix+user.nextUri();			
+			if (Math.random()<0.2) {
+				url = prefix+"/search/site/"+nextWord();
+			}
 			ctime += expRand(requestRate);
 			long curtime = Math.round(ctime*1000);
-			if (page > 0) {
-				w.write(curtime+" "+url+suffix+"\n");
-			} else {
-				w.write(curtime+" "+url+"\n");
-			}
+			log.info("{} {}",curtime,url);
+			w.write(curtime+" "+url+"\n");
+			user.setEntry(url);
 		}
-		w.close();
+		client.close();
+		w.close();		
+	}
+	
+	public static void main(String[] args) throws Exception {
+		new GenDrupal().generate();
 	}
 }

@@ -6,7 +6,7 @@
 		</encoder>
 	</appender>
 	
-	<logger name="edu.cmu.one" level="TRACE"/>
+	<logger name="edu.cmu.tactic" level="TRACE"/>
 	<logger name="org.springframework.core" level="INFO"/>
 	<logger name="org.springframework.beans" level="INFO"/>
 	<logger name="org.springframework.context" level="INFO"/>

@@ -51,6 +51,7 @@ dependencies {
  	compile group: 'org.springframework', name: 'spring-test', version:springVersion
 	compile group: 'com.ning', name:'async-http-client', version: '1.6.5'
 	compile group: 'org.jsoup', name:'jsoup', version:'1.6.1'
+	compile group: 'org.quartz-scheduler', name:'quartz', version:'2.1.0'
 	
 	// Misc 
 	compile group: 'com.google.guava', name: 'guava', version: '10.0'
