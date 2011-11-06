@@ -53,15 +53,16 @@ public class HttpDriver {
 		
 		RequestJob.countdown = new AtomicInteger(requests.size());		
 		RequestJob.client = client;
+		RequestJob.collector = new Collector();
 		RequestJob.scheduler = scheduler;
 		RequestJob.log = log;
 		RequestJob.offsetTime = System.currentTimeMillis();
 		
+		log.info("Issue time = {}",(System.currentTimeMillis()-RequestJob.offsetTime));
+		scheduler.start();
 		for (RequestJob req:requests) {
 			req.issue();
 		}
-		log.info("Issue time = {}",(System.currentTimeMillis()-RequestJob.offsetTime));
-		scheduler.start();
 	}
 	
 	public static void main(String[] args) throws Exception {

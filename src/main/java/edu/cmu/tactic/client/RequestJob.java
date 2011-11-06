@@ -8,6 +8,7 @@ import java.net.URI;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,14 +32,17 @@ import com.ning.http.client.Response;
 
 public class RequestJob implements Job {
 	String uri;
+	int actionId;
 	long issueTime;
 	long replyTime;
 	long responseTime;
 	long issueDelay;
 	boolean isDependent = false;
+	AtomicInteger dependentCounter;
 	
 	static boolean loadDependent = true;
 	
+	static Collector collector;
 	static AsyncHttpClient client;
 	static Logger log;
 	static AtomicInteger requestCounter = new AtomicInteger(0);
@@ -46,6 +50,10 @@ public class RequestJob implements Job {
 	static AtomicInteger countdown;
 	static Scheduler scheduler;
 	static long offsetTime;
+	
+	static AtomicInteger actionCounter = new AtomicInteger(0);
+	static ConcurrentHashMap<Integer, Long> actionTime = new ConcurrentHashMap<Integer, Long>();
+	static ConcurrentHashMap<Integer, RequestJob> actionMap = new ConcurrentHashMap<Integer, RequestJob>();
 	
 	public RequestJob() { }
 	
@@ -58,7 +66,10 @@ public class RequestJob implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		context.getMergedJobDataMap();
-		
+		if (!isDependent) {
+			log.debug("{} {}",actionId, uri);
+			actionMap.put(actionId, this);
+		}
 		try {
 			issueTime = System.currentTimeMillis();
 			client.prepareGet(uri).execute(new AsyncCompletionHandler<Response>() {			
@@ -66,7 +77,8 @@ public class RequestJob implements Job {
 				public Response onCompleted(Response response) throws Exception {
 					replyTime = System.currentTimeMillis();
 					responseTime = replyTime-issueTime;
-					log.info("{}\t{}\t{}\t{}",new Object[] {issueTime-offsetTime, responseTime, uri, response.getStatusText()});
+					actionTime.put(actionId, replyTime);
+					log.debug("{}\t{}\t{}\t{}",new Object[] {issueTime-offsetTime, responseTime, uri, response.getStatusText()});
 					
 					// Load dependent object for html						
 					for (Cookie cookie:response.getCookies()) {
@@ -74,37 +86,29 @@ public class RequestJob implements Job {
 					}
 					List<String> resources = null;
 					if (loadDependent && response.getContentType().contains("text/html")) {
-						resources = getLinks(response.getResponseBody());
-					} /* 
-					else if (response.getContentType().contains("text/css")) {
 						resources = getResources(response.getResponseBody());
-					} */
+					}
 					if (resources != null) {
-						// Sort resources
-						List<String> styles, js, images;
-						styles = new LinkedList<String>();
-						js = new LinkedList<String>();
-						images = new LinkedList<String>();
+						dependentCounter = new AtomicInteger(resources.size());
 						for (String link:resources) {
-							if (link.contains(".css")) {
-								styles.add(link);
-							} else if (link.contains(".js")) {
-								js.add(link);
-							} else
-								images.add(link);								
-						}
-						LinkedList<String> links = new LinkedList<String>();
-						links.addAll(styles);
-						links.addAll(js);
-						links.addAll(images);
-						
-						for (String link:links) {
+							int priority = 1;
+							if (link.contains(".css")) priority = 3;
+							else if (link.contains(".js")) priority = 2;
 							countdown.incrementAndGet();
-							RequestJob.issue(0, response.getUri().resolve(new URI(link)).toString(), true);
+							RequestJob.issue(0, response.getUri().resolve(new URI(link)).toString(), true, priority, actionId);
 						}
 					}
 					
 					// Reduce counter for downloaded objects
+					if (isDependent) {
+						RequestJob job = RequestJob.actionMap.get(actionId);
+						if (job.dependentCounter.decrementAndGet() == 0) {
+							// Finish loading last request for the page
+							collector.record(job, replyTime);
+							//log.info("{}\t{}\tACTION:{}", new Object[] { parent.issueTime - offsetTime, replyTime - parent.issueTime, parent.uri });
+							RequestJob.actionMap.remove(actionId);
+						}
+					}
 					if (countdown.decrementAndGet() <=0) {
 						scheduler.shutdown();
 						System.exit(0);
@@ -120,7 +124,7 @@ public class RequestJob implements Job {
 						if (countdown.decrementAndGet() <=0) {
 							scheduler.shutdown();
 							client.close();
-							System.exit(0);
+							//System.exit(0);
 						}
 					} catch (Exception e) {
 						log.error("Shutdown error {}",e);
@@ -132,7 +136,7 @@ public class RequestJob implements Job {
 		}					
 	}
 	
-	List<String> getLinks(String content) {
+	List<String> getResources(String content) {
 		List<String> links = new LinkedList<String>();
 		Document doc = Jsoup.parse(content);						
 		// Extract CSS
@@ -155,26 +159,17 @@ public class RequestJob implements Job {
 		return links;
 	}
 	
-	List<String> getResources(String content) {
-		//log.info("CSS:{}",content);
-		List<String> links = new LinkedList<String>();
-		Pattern p = Pattern.compile("url\\((.*)\\)");
-		Matcher m = p.matcher(content);
-		while (m.find()) {
-			links.add(m.group(1));
-		}
-		return links;
-	}
-	
-	public static void issue(long issueDelay, String uri, boolean isDependent) {
+	public static void issue(long issueDelay, String uri, boolean isDependent, int priority, int actionId) {
 		JobDetail job = newJob(RequestJob.class)
 				.withIdentity("Request-"+requestCounter.getAndIncrement())
 				.usingJobData("uri", uri)
 				.usingJobData("issueDelay", issueDelay)
 				.usingJobData("isDependent", isDependent)
+				.usingJobData("actionId", actionId)
 				.build();
 		Trigger trigger = newTrigger()
 				.startAt(new Date(issueDelay + offsetTime))
+				.withPriority(priority)
 				.build();
 		try {
 			scheduler.scheduleJob(job, trigger);
@@ -184,7 +179,8 @@ public class RequestJob implements Job {
 	}
 	
 	public void issue() {
-		RequestJob.issue(issueDelay, uri, isDependent);
+		int actionId = actionCounter.getAndIncrement();
+		RequestJob.issue(issueDelay, uri, isDependent, 10, actionId);
 	}
 	
 	public void setIsDependent(boolean isDependent) {
@@ -195,6 +191,9 @@ public class RequestJob implements Job {
 	}
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+	public void setActionId(int actionId) {
+		this.actionId = actionId;
 	}
 	
 }
