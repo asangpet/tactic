@@ -79,11 +79,11 @@ public class ContentWebAnalysis extends AnalysisInstance {
 	
 	public Map<String, double[]> analyze() {
 		Map<String, DiscreteProbDensity> densityMap = new LinkedHashMap<String, DiscreteProbDensity>();
-		densityMap.put("varnish", matlab.gev(0.2, 100, 1200).setRaw(100));
-		densityMap.put("bench-drupal", matlab.gev(0.2, 100, 1100).setRaw(100));
-		densityMap.put("bench-drupal-db", matlab.gev(0.2, 100, 200).setRaw(500));
-		densityMap.put("bench-solr", matlab.gev(0.2, 100, 200).setRaw(500));
-		densityMap.put("bench-memcache", matlab.gev(0.2, 100, 200).setRaw(500));
+		densityMap.put("varnish", matlab.gev(0.2, 100, 1200).setRawCount(100));
+		densityMap.put("bench-drupal", matlab.gev(0.2, 100, 1100).setRawCount(100));
+		densityMap.put("bench-drupal-db", matlab.gev(0.2, 100, 200).setRawCount(500));
+		densityMap.put("bench-solr", matlab.gev(0.2, 100, 200).setRawCount(500));
+		densityMap.put("bench-memcache", matlab.gev(0.2, 100, 200).setRawCount(500));
 		graph.analyze(densityMap);
 		
 		Map<String, double[]> result = new LinkedHashMap<String, double[]>();

@@ -25,6 +25,10 @@ public class Response {
 		return client;
 	}
 	
+	public double getResponseTime() {
+		return responseTime;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

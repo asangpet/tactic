@@ -77,9 +77,9 @@ public class DemoWebAnalysis extends AnalysisInstance {
 		graph.setMatlab(matlab);
 		
 		Map<String, DiscreteProbDensity> densityMap = new LinkedHashMap<String, DiscreteProbDensity>();
-		densityMap.put("web"+id, matlab.gev(0.2, 100, 1200).setRaw(100));
-		densityMap.put("app"+id, matlab.gev(0.2, 100, 1100).setRaw(100));
-		densityMap.put("db"+id, matlab.gev(0.2, 100, 200).setRaw(500));
+		densityMap.put("web"+id, matlab.gev(0.2, 100, 1200).setRawCount(100));
+		densityMap.put("app"+id, matlab.gev(0.2, 100, 1100).setRawCount(100));
+		densityMap.put("db"+id, matlab.gev(0.2, 100, 200).setRawCount(500));
 		graph.analyze(densityMap);
 	}
 	

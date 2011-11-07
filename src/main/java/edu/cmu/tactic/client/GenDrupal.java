@@ -14,9 +14,11 @@ import com.ning.http.client.AsyncHttpClientConfig;
 public class GenDrupal {
 	int numRequest = 10000;
 	int requestRate = 10; // Avg # requests per sec
+	double searchPortion = 0.25;	// Probability of making a search request
 	String prefix = "http://10.0.50.1";
 	Logger log = LoggerFactory.getLogger(GenDrupal.class);
-
+	String traceFile = "trace/drupal3.trace";
+	
 	private AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
 				.setFollowRedirects(true)
 				.build();
@@ -27,12 +29,12 @@ public class GenDrupal {
 	}
 	
 	String nextWord() {
-		String[] words = {"illa", "posted", "photo", "vogue", "abbas", "bene", "gilvus", "haero", "iaeceo", "pagus", "praesent", "proprius", "esca", "enim", "gemino", "mauris", "similis", "sudo", "venio", "virtus", "obruo"};
+		String[] words = {"illa", "posted", "photo", "vogue", "abbas", "bene", "gilvus", "haero", "iaeceo", "pagus", "praesent", "proprius", "esca", "enim", "gemino", "mauris", "similis", "sudo", "venio", "virtus", "obruo", "decet", "posted", "photo", "conventio", "Neque", "nunc", "uxor", "Abdo", "causa", "haero", "zelus", "Dolore", "quadrum", "roto", "volutpat", "interdico", "ullamcorper"};
 		return words[(int)(Math.round(Math.random()*words.length)) % words.length];
 	}
 	
 	void generate() throws Exception {
-		Writer w = Files.newWriter(new File("trace/drupal.trace"), Charset.forName("US-ASCII"));
+		Writer w = Files.newWriter(new File(traceFile), Charset.forName("US-ASCII"));
 		
 		User user = new User(prefix+"/");		
 		user.setClient(client);
@@ -40,7 +42,7 @@ public class GenDrupal {
 		double ctime = 0;
 		for (int i=0;i<numRequest;i++) {
 			String url = prefix+user.nextUri();			
-			if (Math.random()<0.2) {
+			if (Math.random()<searchPortion) {
 				url = prefix+"/search/site/"+nextWord();
 			}
 			ctime += expRand(requestRate);

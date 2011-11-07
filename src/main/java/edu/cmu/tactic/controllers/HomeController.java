@@ -60,6 +60,13 @@ public class HomeController {
 		logger.info("page records:"+response.getContent().size());
 		return response;
 	}
+	@RequestMapping(value = "/requests", produces="application/json")
+	public @ResponseBody double[] showRequest(Model model) {
+		//Page<Response> response = responseData.listRequest();
+		return responseData.listRequest();
+		//logger.info("page records:"+response.getContent().size());
+		//return response;
+	}
 	
 	@RequestMapping(value = "/graph", produces="application/json")
 	public @ResponseBody HashMap<String, List<HashMap<String,Object>>> showGraph(Model model) {

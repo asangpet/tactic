@@ -10,8 +10,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.listeners.SchedulerListenerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +25,7 @@ public class HttpDriver {
 	private static final Logger log = LoggerFactory.getLogger(HttpDriver.class);
 	private static final int REQUEST_QUEUE_SIZE = 10000;
 	
-	private Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+	Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 	
 	private AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
 		.setAllowPoolingConnection(true)
@@ -57,8 +60,8 @@ public class HttpDriver {
 		RequestJob.scheduler = scheduler;
 		RequestJob.log = log;
 		RequestJob.offsetTime = System.currentTimeMillis();
-		
-		log.info("Issue time = {}",(System.currentTimeMillis()-RequestJob.offsetTime));
+
+		log.info("Issue time = {}",(System.currentTimeMillis()-RequestJob.offsetTime));		
 		scheduler.start();
 		for (RequestJob req:requests) {
 			req.issue();

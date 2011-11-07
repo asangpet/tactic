@@ -176,4 +176,8 @@ public class MatlabUtility {
 		}
 		return result;
 	}
+	
+	public DiscreteProbDensity newDiscreteProbDensity() {
+		return new DiscreteProbDensity(maxTime/rangeinterval,0,maxTime,offset);
+	}
 }

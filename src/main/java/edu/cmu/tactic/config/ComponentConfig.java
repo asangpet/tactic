@@ -14,7 +14,7 @@ import edu.cmu.tactic.model.MatlabUtility;
 public class ComponentConfig {
 	@Bean
 	public Logger log() {
-		return LoggerFactory.getLogger("edu.cmu.one.tactic");
+		return LoggerFactory.getLogger("edu.cmu.tactic");
 	}
 	
 	@Bean
