@@ -13,11 +13,11 @@ import com.ning.http.client.AsyncHttpClientConfig;
 
 public class GenDrupal {
 	int numRequest = 10000;
-	int requestRate = 10; // Avg # requests per sec
-	double searchPortion = 0.25;	// Probability of making a search request
+	int requestRate = 20; // Avg # requests per sec
+	double searchPortion = 0.3;	// Probability of making a search request
 	String prefix = "http://10.0.50.1";
 	Logger log = LoggerFactory.getLogger(GenDrupal.class);
-	String traceFile = "trace/drupal3.trace";
+	String traceFile = "trace/drupal2.trace";
 	
 	private AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
 				.setFollowRedirects(true)
@@ -42,7 +42,7 @@ public class GenDrupal {
 		double ctime = 0;
 		for (int i=0;i<numRequest;i++) {
 			String url = prefix+user.nextUri();			
-			if (Math.random()<searchPortion) {
+			if (Math.random()<searchPortion && !url.contains("search")) {
 				url = prefix+"/search/site/"+nextWord();
 			}
 			ctime += expRand(requestRate);

@@ -67,6 +67,12 @@ public class HomeController {
 		//logger.info("page records:"+response.getContent().size());
 		//return response;
 	}
+	@RequestMapping(value = "/responseTime", produces="application/json")
+	public @ResponseBody Map<String, double[]> showActionResponseTime(Model model) {
+		Map<String, double[]> responseMap = new HashMap<String,double[]>();
+		responseMap.put("request", responseData.getActionDensity());
+		return responseMap;
+	}
 	
 	@RequestMapping(value = "/graph", produces="application/json")
 	public @ResponseBody HashMap<String, List<HashMap<String,Object>>> showGraph(Model model) {

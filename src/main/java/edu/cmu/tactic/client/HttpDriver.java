@@ -10,11 +10,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.listeners.JobListenerSupport;
 import org.quartz.listeners.SchedulerListenerSupport;
+import org.quartz.listeners.TriggerListenerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +35,7 @@ public class HttpDriver {
 	Scheduler scheduler = new StdSchedulerFactory().getScheduler();
 	
 	private AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
+		.setIOThreadMultiplier(1)
 		.setAllowPoolingConnection(true)
 		.setCompressionEnabled(true)
 		.setFollowRedirects(true)
@@ -37,18 +45,23 @@ public class HttpDriver {
 	List<RequestJob> requests = new ArrayList<RequestJob>(REQUEST_QUEUE_SIZE);	
 	
 	public HttpDriver(String tracefile) throws Exception {
-		BufferedReader f = new BufferedReader(new FileReader(tracefile));
-		String request;
+		try {
+			BufferedReader f = new BufferedReader(new FileReader(tracefile));
+			String request;
 		
-		while ((request = f.readLine()) != null) {
-			StringTokenizer tokens = new StringTokenizer(request);
-			if (tokens.hasMoreTokens()) {
-				long delay = Long.parseLong(tokens.nextToken());
-				String uri = tokens.nextToken();
+			while ((request = f.readLine()) != null) {
+				StringTokenizer tokens = new StringTokenizer(request);
+				if (tokens.hasMoreTokens()) {
+					long delay = Long.parseLong(tokens.nextToken());
+					String uri = tokens.nextToken();
 			
-				requests.add(new RequestJob(delay,uri,false));
-			}
-		}		
+					requests.add(new RequestJob(delay,uri,false));
+				}
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	public void run() throws Exception {
@@ -61,7 +74,6 @@ public class HttpDriver {
 		RequestJob.log = log;
 		RequestJob.offsetTime = System.currentTimeMillis();
 
-		log.info("Issue time = {}",(System.currentTimeMillis()-RequestJob.offsetTime));		
 		scheduler.start();
 		for (RequestJob req:requests) {
 			req.issue();
@@ -71,18 +83,10 @@ public class HttpDriver {
 	public static void main(String[] args) throws Exception {
 		long now = new Date().getTime();
 		long schedule = ((now / 10000)+1)*10000;
+		System.setProperty("org.terracotta.quartz.skipUpdateCheck", "true");
 		log.info("Will start in {} ms",(schedule - now));
 		final HttpDriver driver = new HttpDriver(args[0]);
-		Timer t = new Timer();
-		t.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					driver.run();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}, new Date(schedule));		
+		Thread.sleep(schedule-now);
+		driver.run();
 	}
 }

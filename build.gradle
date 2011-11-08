@@ -1,6 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'war'
+apply plugin: 'application'
+
+mainClassName = 'edu.cmu.tactic.client.HttpDriver'
 
 version = '0.1'
 sourceCompatibility = '1.7'

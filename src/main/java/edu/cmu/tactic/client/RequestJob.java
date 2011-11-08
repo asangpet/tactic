@@ -23,6 +23,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 
 import com.ning.http.client.AsyncCompletionHandler;
@@ -38,7 +39,7 @@ public class RequestJob implements Job {
 	long responseTime;
 	long issueDelay;
 	boolean isDependent = false;
-	AtomicInteger dependentCounter;
+	AtomicInteger dependentCounter = null;
 	
 	static boolean loadDependent = true;
 	
@@ -94,25 +95,12 @@ public class RequestJob implements Job {
 							int priority = 1;
 							if (link.contains(".css")) priority = 3;
 							else if (link.contains(".js")) priority = 2;
-							countdown.incrementAndGet();
 							RequestJob.issue(0, response.getUri().resolve(new URI(link)).toString(), true, priority, actionId);
 						}
 					}
 					
-					// Reduce counter for downloaded objects
-					if (isDependent) {
-						RequestJob job = RequestJob.actionMap.get(actionId);
-						if (job.dependentCounter.decrementAndGet() == 0) {
-							// Finish loading last request for the page
-							collector.record(job, replyTime);
-							//log.info("{}\t{}\tACTION:{}", new Object[] { parent.issueTime - offsetTime, replyTime - parent.issueTime, parent.uri });
-							RequestJob.actionMap.remove(actionId);
-						}
-					}
-					if (countdown.decrementAndGet() <=0) {
-						scheduler.shutdown();
-						System.exit(0);
-					}
+					handleClose(true);
+					
 					return response;
 				}
 				
@@ -120,14 +108,35 @@ public class RequestJob implements Job {
 				public void onThrowable(Throwable t) {
 					log.info("{}\tFAILED\t{}\tFAILED",issueTime-offsetTime, uri);
 					log.error("{}:{}:{}",new Object[] {t,t.getMessage(),t.getCause()});
+					
 					try {
-						if (countdown.decrementAndGet() <=0) {
-							scheduler.shutdown();
-							client.close();
-							//System.exit(0);
-						}
+						handleClose(false);
 					} catch (Exception e) {
 						log.error("Shutdown error {}",e);
+					}
+				}
+				
+				void handleClose(boolean success) throws Exception {
+					// Reduce counter for downloaded objects
+					RequestJob job = RequestJob.actionMap.get(actionId);
+					if (job.dependentCounter == null || isDependent && job.dependentCounter.decrementAndGet() <= 0) {
+						// Finish loading last request for the page
+						collector.record(job, replyTime, success);
+						//log.info("{}\t{}\tACTION:{}", new Object[] { parent.issueTime - offsetTime, replyTime - parent.issueTime, parent.uri });
+						RequestJob.actionMap.remove(actionId);
+						if (countdown.decrementAndGet() <=0) {
+							new Thread("Terminator") {
+								public void run() {
+									try {
+										log.info("Completed in {} ms", (System.currentTimeMillis() - offsetTime));
+										client.close();
+										scheduler.shutdown();										
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								};
+							}.start();
+						}					
 					}
 				}
 			});
@@ -158,7 +167,7 @@ public class RequestJob implements Job {
 		
 		return links;
 	}
-	
+
 	public static void issue(long issueDelay, String uri, boolean isDependent, int priority, int actionId) {
 		JobDetail job = newJob(RequestJob.class)
 				.withIdentity("Request-"+requestCounter.getAndIncrement())
@@ -166,11 +175,10 @@ public class RequestJob implements Job {
 				.usingJobData("issueDelay", issueDelay)
 				.usingJobData("isDependent", isDependent)
 				.usingJobData("actionId", actionId)
-				.build();
-		Trigger trigger = newTrigger()
-				.startAt(new Date(issueDelay + offsetTime))
-				.withPriority(priority)
-				.build();
+				.build();		
+		TriggerBuilder<Trigger> builder = newTrigger().withPriority(priority);
+		builder = (issueDelay==0)? builder.startNow() : builder.startAt(new Date(issueDelay + offsetTime));
+		Trigger trigger = builder.build();		
 		try {
 			scheduler.scheduleJob(job, trigger);
 		} catch (Exception e) {

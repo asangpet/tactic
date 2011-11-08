@@ -10,6 +10,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface ResponseRepository extends PagingAndSortingRepository<Response, String> {
 	@Query("{ 'server.address':?0 }")
 	Page<Response> findByServerAddress(String ip, Pageable pageable);
+	@Query("{ 'server.address':?0 }")
+	List<Response> findAllByServerAddress(String ip);
 	
 	@Query("{ 'protocol':?0 }")
 	Page<Response> findByProtocol(String protocol, Pageable pageable);

@@ -28,6 +28,22 @@ public class Response {
 	public double getResponseTime() {
 		return responseTime;
 	}
+	public double getRequestTime() {
+		return requestTime;
+	}
+	public void setRequestTime(double requestTime) {
+		this.requestTime = requestTime;
+	}
+	public void setResponseTime(double responseTime) {
+		this.responseTime = responseTime;
+	}
+	
+	boolean contains(double time) {
+		return requestTime <= time && requestTime+responseTime >= time;
+	}
+	public boolean isOverlap(Response r) {
+		return r.contains(requestTime) || r.contains(requestTime+responseTime) || contains(r.requestTime);
+	}
 	
 	@Override
 	public String toString() {

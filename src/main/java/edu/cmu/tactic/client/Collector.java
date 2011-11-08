@@ -25,10 +25,11 @@ public class Collector {
 		c = db.getCollection("responseTime");
 	}
 	
-	public void record(RequestJob job, long replyTime) {
+	public void record(RequestJob job, long replyTime, boolean success) {
 		try {
 			log.info("{}\t{}\t{}", new Object[] { job.issueTime - RequestJob.offsetTime, replyTime - job.issueTime, job.uri });
 			URI uri = new URI(job.uri);
+			String statusText = (success)?"COMPLETED":"FAILED";
 			DBObject data = BasicDBObjectBuilder.start().add("timestamp", System.currentTimeMillis())
 								.push("server")
 									.add("address", uri.getHost())
@@ -40,7 +41,7 @@ public class Collector {
 								.add("requestTime", 1.0*job.issueTime)
 								.add("responseTime", 1.0*(replyTime - job.issueTime))
 								.add("request", job.uri)
-								.add("response", "COMPLETED")
+								.add("response", statusText)
 								.add("protocol", "ACTION")
 								.get();
 			c.insert(data);
