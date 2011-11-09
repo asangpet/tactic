@@ -12,9 +12,9 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 
 public class GenDrupal {
-	int numRequest = 10000;
-	int requestRate = 20; // Avg # requests per sec
-	double searchPortion = 0.3;	// Probability of making a search request
+	int numRequest = 9000;
+	int requestRate = 15; // Avg # requests per sec
+	double searchPortion = 0.25;	// Probability of making a search request
 	String prefix = "http://10.0.50.1";
 	Logger log = LoggerFactory.getLogger(GenDrupal.class);
 	String traceFile = "trace/drupal2.trace";

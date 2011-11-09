@@ -25,6 +25,7 @@ import com.mongodb.DBObject;
 import edu.cmu.tactic.analysis.ResponseAnalysis;
 import edu.cmu.tactic.data.Response;
 import edu.cmu.tactic.data.ResponseRepository;
+import edu.cmu.tactic.model.DiscreteCumuDensity;
 import edu.cmu.tactic.model.DiscreteProbDensity;
 import edu.cmu.tactic.model.MatlabUtility;
 import edu.cmu.tactic.model.ParametricDensity;
@@ -127,7 +128,9 @@ public class ResponseDataService {
 		DiscreteProbDensity responseDensity = matlab.newDiscreteProbDensity();
 		responseDensity.convert(responseTime);
 		log.info("Density {}",responseDensity);
-		return responseDensity.getPdf();
+		
+		//return responseDensity.getPdf();
+		return new DiscreteCumuDensity(responseDensity).getPdf();
 	}
 	
 	public double[] listRequest() {

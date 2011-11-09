@@ -5,11 +5,13 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,11 +37,11 @@ public class RequestJob implements Job {
 	String uri;
 	int actionId;
 	long issueTime;
-	long replyTime;
+	long replyTime = -1;
 	long responseTime;
 	long issueDelay;
 	boolean isDependent = false;
-	AtomicInteger dependentCounter = null;
+	int dependentCounter = 0;
 	
 	static boolean loadDependent = true;
 	
@@ -47,14 +49,16 @@ public class RequestJob implements Job {
 	static AsyncHttpClient client;
 	static Logger log;
 	static AtomicInteger requestCounter = new AtomicInteger(0);
+	static AtomicInteger firedCounter = new AtomicInteger(0);
 	
-	static AtomicInteger countdown;
+	static int totalRequests;
 	static Scheduler scheduler;
 	static long offsetTime;
 	
 	static AtomicInteger actionCounter = new AtomicInteger(0);
 	static ConcurrentHashMap<Integer, Long> actionTime = new ConcurrentHashMap<Integer, Long>();
 	static ConcurrentHashMap<Integer, RequestJob> actionMap = new ConcurrentHashMap<Integer, RequestJob>();
+	static ReentrantLock actionLock = new ReentrantLock();
 	
 	public RequestJob() { }
 	
@@ -64,18 +68,52 @@ public class RequestJob implements Job {
 		this.isDependent = isDependent;
 	}
 	
+	void handleClose(boolean success) {
+		// Reduce counter for downloaded objects
+		RequestJob job = RequestJob.actionMap.get(actionId);
+		if (job == null) return;
+		
+		synchronized(job) {
+			if (isDependent) --job.dependentCounter;
+			if (job.dependentCounter <= 0) {
+				if (replyTime < 0) replyTime = issueTime;
+				// Finish loading last request for the page
+				collector.record(job, replyTime, success);
+				//log.info("{}\t{}\tACTION:{}", new Object[] { parent.issueTime - offsetTime, replyTime - parent.issueTime, parent.uri });
+				
+				RequestJob.actionMap.remove(actionId);
+				//log.info("Remaining requests {}/{} Fired",RequestJob.actionMap.size(),firedCounter.get());
+				if (firedCounter.get() == totalRequests && RequestJob.actionMap.size()==0) {
+					new Thread("Terminator") {
+						public void run() {
+							try {
+								log.info("Completed in {} ms", (System.currentTimeMillis() - offsetTime));
+								client.close();
+								scheduler.shutdown();										
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						};
+					}.start();
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		context.getMergedJobDataMap();
 		if (!isDependent) {
 			log.debug("{} {}",actionId, uri);
 			actionMap.put(actionId, this);
+			firedCounter.incrementAndGet();
 		}
 		try {
 			issueTime = System.currentTimeMillis();
-			client.prepareGet(uri).execute(new AsyncCompletionHandler<Response>() {			
+
+			client.prepareGet(uri).execute(new AsyncCompletionHandler<Response>() {				
 				@Override
-				public Response onCompleted(Response response) throws Exception {
+				public Response onCompleted(Response response) throws IOException {
 					replyTime = System.currentTimeMillis();
 					responseTime = replyTime-issueTime;
 					actionTime.put(actionId, replyTime);
@@ -90,12 +128,16 @@ public class RequestJob implements Job {
 						resources = getResources(response.getResponseBody());
 					}
 					if (resources != null) {
-						dependentCounter = new AtomicInteger(resources.size());
+						dependentCounter = resources.size();
 						for (String link:resources) {
 							int priority = 1;
 							if (link.contains(".css")) priority = 3;
 							else if (link.contains(".js")) priority = 2;
-							RequestJob.issue(0, response.getUri().resolve(new URI(link)).toString(), true, priority, actionId);
+							try {
+								RequestJob.issue(0, response.getUri().resolve(new URI(link)).toString(), true, priority, actionId);
+							} catch (URISyntaxException e) {
+								log.error("Issue error - {}",e);
+							}
 						}
 					}
 					
@@ -105,43 +147,18 @@ public class RequestJob implements Job {
 				}
 				
 				@Override
-				public void onThrowable(Throwable t) {
-					log.info("{}\tFAILED\t{}\tFAILED",issueTime-offsetTime, uri);
-					log.error("{}:{}:{}",new Object[] {t,t.getMessage(),t.getCause()});
-					
-					try {
-						handleClose(false);
-					} catch (Exception e) {
-						log.error("Shutdown error {}",e);
-					}
+				public void onThrowable(Throwable e) {
+					log.info("{}\tFAILED\t{}\tFAILED\tOnThrowable",issueTime-offsetTime, uri);
+					log.error("{}:{}:{}",new Object[] {e,e.getMessage(),e.getCause()});
+					handleClose(false);
 				}
 				
-				void handleClose(boolean success) throws Exception {
-					// Reduce counter for downloaded objects
-					RequestJob job = RequestJob.actionMap.get(actionId);
-					if (job.dependentCounter == null || isDependent && job.dependentCounter.decrementAndGet() <= 0) {
-						// Finish loading last request for the page
-						collector.record(job, replyTime, success);
-						//log.info("{}\t{}\tACTION:{}", new Object[] { parent.issueTime - offsetTime, replyTime - parent.issueTime, parent.uri });
-						RequestJob.actionMap.remove(actionId);
-						if (countdown.decrementAndGet() <=0) {
-							new Thread("Terminator") {
-								public void run() {
-									try {
-										log.info("Completed in {} ms", (System.currentTimeMillis() - offsetTime));
-										client.close();
-										scheduler.shutdown();										
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-								};
-							}.start();
-						}					
-					}
-				}
 			});
 		} catch (IOException e) {
-			log.error("{}:{}/{}",new Object[] { e, e.getMessage(),e.getCause() });
+			log.info("{}\tFAILED\t{}\tFAILED\touter loop",issueTime-offsetTime, uri);
+			log.error("{}:{}:{}",new Object[] {e,e.getMessage(),e.getCause()});
+			
+			handleClose(false);
 		}					
 	}
 	

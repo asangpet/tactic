@@ -6,22 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.JobKey;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
-import org.quartz.listeners.JobListenerSupport;
-import org.quartz.listeners.SchedulerListenerSupport;
-import org.quartz.listeners.TriggerListenerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +53,7 @@ public class HttpDriver {
 	public void run() throws Exception {
 		log.info("Replaying {} requests",requests.size());
 		
-		RequestJob.countdown = new AtomicInteger(requests.size());		
+		RequestJob.totalRequests = requests.size();
 		RequestJob.client = client;
 		RequestJob.collector = new Collector();
 		RequestJob.scheduler = scheduler;

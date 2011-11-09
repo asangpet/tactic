@@ -71,6 +71,7 @@ public class HomeController {
 	public @ResponseBody Map<String, double[]> showActionResponseTime(Model model) {
 		Map<String, double[]> responseMap = new HashMap<String,double[]>();
 		responseMap.put("request", responseData.getActionDensity());
+		responseMap.put("raw",responseData.getResponseTime("10.0.50.1", "ACTION"));
 		return responseMap;
 	}
 	
