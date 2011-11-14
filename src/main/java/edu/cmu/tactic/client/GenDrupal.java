@@ -13,11 +13,14 @@ import com.ning.http.client.AsyncHttpClientConfig;
 
 public class GenDrupal {
 	int numRequest = 9000;
-	int requestRate = 15; // Avg # requests per sec
+	int requestRate = 20; // Avg # requests per sec
+	// Request rate 20 - too high
+	// Request rate 15 - 31-65k (drupal2)
+	// Request rate 12 - 32-60k (drupal_12)
 	double searchPortion = 0.25;	// Probability of making a search request
 	String prefix = "http://10.0.50.1";
 	Logger log = LoggerFactory.getLogger(GenDrupal.class);
-	String traceFile = "trace/drupal2.trace";
+	String traceFile = "trace/drupal_20.trace";
 	
 	private AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
 				.setFollowRedirects(true)

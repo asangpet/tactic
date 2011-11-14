@@ -82,7 +82,7 @@ public class RequestJob implements Job {
 				//log.info("{}\t{}\tACTION:{}", new Object[] { parent.issueTime - offsetTime, replyTime - parent.issueTime, parent.uri });
 				
 				RequestJob.actionMap.remove(actionId);
-				//log.info("Remaining requests {}/{} Fired",RequestJob.actionMap.size(),firedCounter.get());
+				log.trace("Remaining requests {}/{} Fired",RequestJob.actionMap.size(),firedCounter.get());
 				if (firedCounter.get() == totalRequests && RequestJob.actionMap.size()==0) {
 					new Thread("Terminator") {
 						public void run() {

@@ -1,10 +1,8 @@
 package edu.cmu.tactic.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -28,7 +25,6 @@ import edu.cmu.tactic.data.ResponseRepository;
 import edu.cmu.tactic.model.DiscreteCumuDensity;
 import edu.cmu.tactic.model.DiscreteProbDensity;
 import edu.cmu.tactic.model.MatlabUtility;
-import edu.cmu.tactic.model.ParametricDensity;
 
 @Service
 public class ResponseDataService {
@@ -94,8 +90,33 @@ public class ResponseDataService {
 		return result;
 	}
 	
+	public double[] sampling(double[] source, int size) {
+		double[] result = new double[size];
+		//double prob = size/source.length;
+		int skip = source.length/size;
+		int idx = 0;
+		for (int i=0;i<source.length;) {			
+			//if (Math.random() <= prob || (size-idx >= source.length-i)) {
+			result[idx++] = source[i];
+			if (size-idx >= source.length-i) i++;
+			else i+=skip;
+		}
+		return result;
+	}
+	
 	public double[] getResponseTime(String addr, String protocol) {
-		DBCollection c = mongoTemplate.getCollection("responseTime");
+		return getResponseTime(addr,protocol,"responseTime");
+	}
+	public double[] getCdf(double[] data) {
+		DiscreteProbDensity responseDensity = matlab.newDiscreteProbDensity();
+		responseDensity.convert(data);
+		log.info("Density {}",responseDensity);
+		
+		//return responseDensity.getPdf();
+		return new DiscreteCumuDensity(responseDensity).getPdf();		
+	}
+	public double[] getResponseTime(String addr, String protocol, String collection) {
+		DBCollection c = mongoTemplate.getCollection(collection);
 		DBObject query = null;
 		if (protocol != null) {
 			query = BasicDBObjectBuilder.start()

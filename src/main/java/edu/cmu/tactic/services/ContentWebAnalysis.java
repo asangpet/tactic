@@ -24,8 +24,10 @@ public class ContentWebAnalysis extends AnalysisInstance {
 		((ImpactCluster)cluster).setLog(log);
 		
 		service = Builder.buildService("drupal", "varnish")
-					.comp("bench-drupal")
-					.dist("bench-drupal-db","bench-memcache","bench-solr")
+					.pushDist("bench-drupal")
+						.dist("bench-memcache","bench-drupal-db","bench-solr")
+					.pop()
+					.pushDist("bench-nfs")
 					.build();
 		cluster.add(service).addHost("amdw6");
 	}
