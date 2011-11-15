@@ -103,6 +103,20 @@ public class ResponseDataService {
 		}
 		return result;
 	}
+	public double[][] sampling2d(double[][] source, int size) {
+		double[][] result = new double[size][];
+		//double prob = size/source.length;
+		int skip = source.length/size;
+		int idx = 0;
+		for (int i=0;i<source.length;) {			
+			//if (Math.random() <= prob || (size-idx >= source.length-i)) {
+			if (idx == size) break;
+			result[idx++] = source[i];
+			if (size-idx >= source.length-i) i++;
+			else i+=skip;
+		}
+		return result;
+	}
 	
 	public double[] getResponseTime(String addr, String protocol) {
 		return getResponseTime(addr,protocol,"responseTime");
@@ -115,33 +129,79 @@ public class ResponseDataService {
 		//return responseDensity.getPdf();
 		return new DiscreteCumuDensity(responseDensity).getPdf();		
 	}
-	public double[] getResponseTime(String addr, String protocol, String collection) {
+	
+	interface CursorOperator {
+		public void init(int length);
+		public void iterate(int index, double requestTime, double responseTime);
+		public Object getResult();
+	}
+	Object doQueryResponse(String addr, String protocol, String collection, CursorOperator op) {
 		DBCollection c = mongoTemplate.getCollection(collection);
-		DBObject query = null;
+		BasicDBObjectBuilder builder = BasicDBObjectBuilder.start().add("server.address", addr);
 		if (protocol != null) {
-			query = BasicDBObjectBuilder.start()
-					.add("server.address", addr)
-					.add("protocol", protocol)
-					.get();
-		} else {
-			query = BasicDBObjectBuilder.start()
-					.add("server.address", addr)
-					.get();			
+			builder.add("protocol", protocol);
 		}
+		DBObject query = builder.get();
 			
-		DBCursor cursor = c.find(query);
+		DBCursor cursor = c.find(query, 
+				BasicDBObjectBuilder.start().add("requestTime", 1).add("responseTime", 1).get()
+				).sort(BasicDBObjectBuilder.start().add("requestTime", 1).get());
 		log.info("Load timing {} - {}",addr,cursor.count());
 		
-		double[] result = new double[cursor.count()];
-		int idx = 0;
+		int idx = 0, limit=cursor.count();
+		op.init(limit);
 		Iterator<DBObject> iter = cursor.iterator();
-		while (iter.hasNext() && idx < result.length) {
+		while (iter.hasNext() && idx < limit) {
 			DBObject response = iter.next();
-			result[idx++] = (Double)response.get("responseTime");
+			op.iterate(idx, (Double)response.get("requestTime"), (Double)response.get("responseTime"));
+			++idx;
 		}		
 		cursor.close();
 		
-		return result;
+		return op.getResult();		
+	}
+	/**
+	 * Return <requestTime, responseTime> as 2 arrays
+	 * @param addr
+	 * @param protocol
+	 * @param collection
+	 * @return
+	 */
+	public double[][] getRequestResponseTime(String addr, String protocol, String collection) {
+		return (double[][])doQueryResponse(addr, protocol, collection, new CursorOperator() {
+			double[][] result;
+			double min = Double.MAX_VALUE;
+			
+			public void init(int length) {
+				result = new double[length][];				
+			}
+			public Object getResult() {
+				for (int i=0;i<result.length;i++) {
+					result[i][0] = result[i][0] - min;
+				}
+				return result;
+			}
+			public void iterate(int index, double requestTime, double responseTime) {
+				if (requestTime < min) min = requestTime;
+				result[index] = new double[] { requestTime, responseTime };
+			}
+		});
+	}
+	public double[] getResponseTime(String addr, String protocol, String collection) {
+		return (double[])doQueryResponse(addr, protocol, collection, new CursorOperator() {
+			double[] result;
+			
+			public void init(int length) {
+				result = new double[length];
+				
+			}
+			public Object getResult() {
+				return result;
+			}
+			public void iterate(int index, double requestTime, double responseTime) {
+				result[index] = responseTime;
+			}
+		});
 	}
 	
 	public double[] getActionDensity() {

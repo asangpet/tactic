@@ -72,14 +72,34 @@ public class HomeController {
 		Map<String, double[]> responseMap = new HashMap<String,double[]>();
 		//responseMap.put("raw20",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_20"), 900));
 		//responseMap.put("raw18",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_18"), 900));
-		responseMap.put("raw15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15"), 900));
-		responseMap.put("app15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app"), 900));
-		responseMap.put("solr15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_solr"), 900));
-		responseMap.put("as15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_solr"), 900));
-		responseMap.put("af15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_img"), 900));
+		//responseMap.put("raw15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15"), 900));
+		//responseMap.put("app15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app"), 900));
+		//responseMap.put("solr15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_solr"), 900));
+		//responseMap.put("as15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_solr"), 900));
+		//responseMap.put("af15",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_img"), 900));
+		//responseMap.put("current",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "responseTime"), 900));
 		//responseMap.put("raw12",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_12"), 900));
+		
+		/*
+		responseMap.put("app-0",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "app_0"), 900));
+		responseMap.put("app-1",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "app_1"), 900));
+		responseMap.put("app-solr-0",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "app_solr_0"), 900));
+		responseMap.put("app-solr-1",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "app_solr_1"), 900));
+		responseMap.put("current",responseData.sampling(responseData.getResponseTime("10.0.50.1", "ACTION", "responseTime"), 900));
+		*/
+		responseMap.put("current",responseData.getResponseTime("10.0.50.1", "ACTION", "responseTime"));
+		
 		return responseMap;
 	}
+	
+	@RequestMapping(value = "/scatterResponseTime", produces="application/json")
+	public @ResponseBody Map<String, double[][]> showScatterResponseTime(Model model) {
+		Map<String, double[][]> responseMap = new HashMap<String,double[][]>();		
+		responseMap.put("current",responseData.sampling2d(responseData.getRequestResponseTime("10.0.50.1", "ACTION", "responseTime"),900));		
+		responseMap.put("app-bundle",responseData.sampling2d(responseData.getRequestResponseTime("10.0.50.1", "ACTION", "multi_app_12345_1"),900));
+		return responseMap;
+	}
+	
 	@RequestMapping(value = "/cdf", produces="application/json")
 	public @ResponseBody Map<String, double[]> showActionCdf(Model model) {
 		Map<String, double[]> responseMap = new HashMap<String,double[]>();
@@ -92,12 +112,37 @@ public class HomeController {
 		//responseMap.put("raw15",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15")));
 		//responseMap.put("app15",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app")));
 		//responseMap.put("solr15",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_solr")));
+		
+		/*** App with other servers
+		responseMap.put("app",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_2")));
 		responseMap.put("app-solr",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_solr")));
-		responseMap.put("app-nfs",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_img")));
-		responseMap.put("app-mem-15",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_mem")));
+		responseMap.put("app-img",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_img_localimg")));
+		responseMap.put("app-mem",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_mem")));
 		responseMap.put("app-db",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_db")));
-		//responseMap.put("app-solr-mem15",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "drupal_rate_15_separate_app_solr_mem")));
-		responseMap.put("current",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "responseTime")));
+		**/
+		
+		/** App without cache effect
+		responseMap.put("app-0",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_0")));
+		responseMap.put("app-solr-0",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_solr_0")));
+		responseMap.put("app-db-0",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_db_0")));
+		responseMap.put("app-img-0",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_img_0")));
+		responseMap.put("app-var-0",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_varnish_0")));
+		responseMap.put("app-mem-0",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_mem_0")));
+
+		responseMap.put("app-1",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_1")));
+		responseMap.put("app-solr-1",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_solr_1")));
+		responseMap.put("app-db-1",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_db_1")));
+		responseMap.put("app-img-1",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_img_1")));
+		responseMap.put("app-var-1",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_varnish_1")));
+		responseMap.put("app-mem-1",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_mem_1")));
+		**/
+		double[] currentCdf = responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "responseTime"));
+		responseMap.put("current",currentCdf);
+		responseMap.put("app-bundle",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_app_12345_1")));
+		
+		double[] target = new double[currentCdf.length];
+		for (int i=0;i<target.length;i++) target[i] = 0.95;
+		responseMap.put("target",target);
 		return responseMap;
 	}
 	
