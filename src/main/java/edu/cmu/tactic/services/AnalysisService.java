@@ -12,6 +12,7 @@ import edu.cmu.tactic.model.MatlabUtility;
 public class AnalysisService {
 	@Inject	Logger log;	
 	@Inject MatlabUtility matlab;
+	@Inject ResponseDataService dataService;
 
 	Map<String, AnalysisInstance> instances = new LinkedHashMap<String, AnalysisInstance>();
 	
@@ -31,6 +32,16 @@ public class AnalysisService {
 		cms.setMatlab(matlab);
 		cms.setup();
 		instances.put("cms", cms);
+	}
+	
+	@PostConstruct
+	public void addShardContentWebAnalysis() {
+		ShardContentWebAnalysis cms = new ShardContentWebAnalysis();
+		cms.setLog(log);
+		cms.setMatlab(matlab);
+		cms.setDataService(dataService);
+		cms.setup();
+		instances.put("shardcms", cms);
 	}
 	
 	public AnalysisInstance getInstance(String name) {

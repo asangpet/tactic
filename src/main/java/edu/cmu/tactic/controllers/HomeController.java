@@ -97,6 +97,7 @@ public class HomeController {
 		Map<String, double[][]> responseMap = new HashMap<String,double[][]>();		
 		responseMap.put("current",responseData.sampling2d(responseData.getRequestResponseTime("10.0.50.1", "ACTION", "responseTime"),900));		
 		responseMap.put("app-bundle",responseData.sampling2d(responseData.getRequestResponseTime("10.0.50.1", "ACTION", "multi_app_12345_1"),900));
+		responseMap.put("app-12-345",responseData.sampling2d(responseData.getRequestResponseTime("10.0.50.1", "ACTION", "multi_app_345_1"),900));
 		return responseMap;
 	}
 	
@@ -137,8 +138,44 @@ public class HomeController {
 		responseMap.put("app-mem-1",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "app_mem_1")));
 		**/
 		double[] currentCdf = responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "responseTime"));
-		responseMap.put("current",currentCdf);
+		responseMap.put("current",currentCdf);		
+		//responseMap.put("app-vdms1-2345n",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_vdms1_2345n")));
+		
+		/* selected scenarios */
+		responseMap.put("vmns1-2345d4",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_vmns1_2345d_run_4")));		
+		responseMap.put("vmn12-345ds5",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_vmn12_345ds_run_5")));		
+		responseMap.put("vdns1-2345m3",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_vdns1_2345m_run_3")));
+		responseMap.put("vdm12-345sn4",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_vdm12_345sn_run_4")));
+		responseMap.put("vdms1-2345n5",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_vdms1_2345n_run_5")));
+		responseMap.put("vdn12-345ms3",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_vdn12_345ms_run_3")));
+		/*
+		v 
+		  n	d 1 2	ok
+		  n d m 1	x
+		  n d s 1 	ok
+		  n m s 1 	ok
+		  n m 1 2 	ok
+		  n s 1 2	x
+			
+		  d 1 2 3	x
+		  d m 1 2	ok
+		  d m s 1	ok
+		  d s 1 2	x
+		  m 1 2 3	x
+		  m s 1 2	x
+		  s 1 2 3	x
+		*/
+		
+		/* Candidates */
+		
+		
+		/*
 		responseMap.put("app-bundle",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_app_12345_1")));
+		responseMap.put("app-1-2345",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_app_2345_1")));
+		responseMap.put("app-12-345",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_app_345_1")));
+		responseMap.put("app-12-v345r2",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_app12_v345_2")));
+		responseMap.put("app-12-v345r3",responseData.getCdf(responseData.getResponseTime("10.0.50.1", "ACTION", "multi_app12_v345_3")));
+		*/
 		
 		double[] target = new double[currentCdf.length];
 		for (int i=0;i<target.length;i++) target[i] = 0.95;
@@ -148,12 +185,12 @@ public class HomeController {
 	
 	@RequestMapping(value = "/graph", produces="application/json")
 	public @ResponseBody HashMap<String, List<HashMap<String,Object>>> showGraph(Model model) {
-		return analyzer.getInstance("cms").getAnalysisGraph().json();
+		return analyzer.getInstance("shardcms").getAnalysisGraph().json();
 	}
 	
 	@RequestMapping(value = "/analyze", produces="application/json") 
 	public @ResponseBody Map<String, double[]> analyzeResponse(Model model) {
-		return analyzer.getInstance("cms").analyze();
+		return analyzer.getInstance("shardcms").analyze();
 	}
 	
 	@RequestMapping(value = "/place", produces="application/json") 

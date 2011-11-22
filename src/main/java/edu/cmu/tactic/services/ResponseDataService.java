@@ -57,10 +57,10 @@ public class ResponseDataService {
 	}
 	
 	public List<Response> getTiming(String addr) {
-		return getTiming(addr, null);
+		return getTiming(addr, null, "responseTime");
 	}
-	public List<Response> getTiming(String addr, String protocol) {
-		DBCollection c = mongoTemplate.getCollection("responseTime");
+	public List<Response> getTiming(String addr, String protocol, String collection) {
+		DBCollection c = mongoTemplate.getCollection(collection);
 		DBObject query = null;
 		if (protocol != null) {
 			query = BasicDBObjectBuilder.start()
@@ -87,6 +87,14 @@ public class ResponseDataService {
 		}		
 		cursor.close();
 		
+		return result;
+	}
+	public double[] timingToResponse(List<Response> timing) {
+		double[] result = new double[timing.size()];
+		int idx = 0;
+		for (Response r:timing) {
+			result[idx++] = r.getResponseTime();
+		}
 		return result;
 	}
 	
@@ -135,7 +143,7 @@ public class ResponseDataService {
 		public void iterate(int index, double requestTime, double responseTime);
 		public Object getResult();
 	}
-	Object doQueryResponse(String addr, String protocol, String collection, CursorOperator op) {
+	Object doQueryResponse(String addr, String protocol, String collection, boolean timeSort, CursorOperator op) {
 		DBCollection c = mongoTemplate.getCollection(collection);
 		BasicDBObjectBuilder builder = BasicDBObjectBuilder.start().add("server.address", addr);
 		if (protocol != null) {
@@ -144,8 +152,8 @@ public class ResponseDataService {
 		DBObject query = builder.get();
 			
 		DBCursor cursor = c.find(query, 
-				BasicDBObjectBuilder.start().add("requestTime", 1).add("responseTime", 1).get()
-				).sort(BasicDBObjectBuilder.start().add("requestTime", 1).get());
+				BasicDBObjectBuilder.start().add("requestTime", 1).add("responseTime", 1).get());
+		if (timeSort) cursor = cursor.sort(BasicDBObjectBuilder.start().add("requestTime", 1).get());
 		log.info("Load timing {} - {}",addr,cursor.count());
 		
 		int idx = 0, limit=cursor.count();
@@ -168,7 +176,7 @@ public class ResponseDataService {
 	 * @return
 	 */
 	public double[][] getRequestResponseTime(String addr, String protocol, String collection) {
-		return (double[][])doQueryResponse(addr, protocol, collection, new CursorOperator() {
+		return (double[][])doQueryResponse(addr, protocol, collection, true, new CursorOperator() {
 			double[][] result;
 			double min = Double.MAX_VALUE;
 			
@@ -188,7 +196,23 @@ public class ResponseDataService {
 		});
 	}
 	public double[] getResponseTime(String addr, String protocol, String collection) {
-		return (double[])doQueryResponse(addr, protocol, collection, new CursorOperator() {
+		return (double[])doQueryResponse(addr, protocol, collection, true, new CursorOperator() {
+			double[] result;
+			
+			public void init(int length) {
+				result = new double[length];
+				
+			}
+			public Object getResult() {
+				return result;
+			}
+			public void iterate(int index, double requestTime, double responseTime) {
+				result[index] = responseTime;
+			}
+		});
+	}
+	public double[] getUnorderedResponseTime(String addr, String protocol, String collection) {
+		return (double[])doQueryResponse(addr, protocol, collection, false, new CursorOperator() {
 			double[] result;
 			
 			public void init(int length) {
@@ -238,8 +262,8 @@ public class ResponseDataService {
 		*/
 		
 		LinkedHashMap<String, List<Response>> responseMap = new LinkedHashMap<String, List<Response>>();
-		responseMap.put("action", getTiming("10.0.50.1","ACTION"));
-		responseMap.put("load", getTiming("10.0.50.1","HTTP"));
+		responseMap.put("action", getTiming("10.0.50.1","ACTION","responseTime"));
+		responseMap.put("load", getTiming("10.0.50.1","HTTP","responseTime"));
 		responseMap.put("app", getTiming("10.0.60.1"));
 		responseMap.put("db", getTiming("10.0.70.1"));
 		responseMap.put("solr", getTiming("10.0.80.1"));
