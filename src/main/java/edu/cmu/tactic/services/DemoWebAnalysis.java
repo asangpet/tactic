@@ -80,7 +80,7 @@ public class DemoWebAnalysis extends AnalysisInstance {
 		densityMap.put("web"+id, matlab.gev(0.2, 100, 1200).setRawCount(100));
 		densityMap.put("app"+id, matlab.gev(0.2, 100, 1100).setRawCount(100));
 		densityMap.put("db"+id, matlab.gev(0.2, 100, 200).setRawCount(500));
-		graph.analyze(densityMap);
+		//graph.analyze(densityMap);
 	}
 	
 	public Map<String, double[]> analyze() {
