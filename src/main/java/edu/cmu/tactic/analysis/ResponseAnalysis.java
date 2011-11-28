@@ -1,6 +1,7 @@
 package edu.cmu.tactic.analysis;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import edu.cmu.tactic.data.Response;
@@ -9,8 +10,14 @@ public class ResponseAnalysis {
 	// Find co-arrival of b with respsect to a (e.g how many request as a percentage of a overlap with b)
 	public double findCoarrivalProb(List<Response> a, List<Response> b) {
 		double co = 0;
+		Collections.sort(a, Response.getRequestTimeComparator());
+		Collections.sort(b, Response.getDeadlineComparator());
+		int begin = 0;
 		for (Response ra:a) {
-			for (Response rb:b) {
+			for (int idx=begin;idx<b.size();idx++) {
+				Response rb = b.get(idx);
+				if (rb.getRequestTime() > ra.getRequestTime()+ra.getResponseTime()) break;
+				if (rb.getRequestTime() + rb.getResponseTime() < ra.getRequestTime()) begin = idx;
 				if (ra.isOverlap(rb)) {
 					co++; break;
 				}
