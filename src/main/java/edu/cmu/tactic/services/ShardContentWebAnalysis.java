@@ -56,15 +56,15 @@ public class ShardContentWebAnalysis extends AnalysisInstance {
 		Map<String, Double> relativeTransfer = new LinkedHashMap<String, Double>();
 		relativeTransfer.put(nodeName, relativeShift);
 		graph.predictTransfer(relativeTransfer);
-		return graph.getNode(root).getAnalysisResponse().getPdf().mode();
+		return graph.getNode(root).getAnalysisResponse().getPdf().average();
 	}
 	
 	void calculateImpact() {
-		double origin = graph.getNode("varnish").getAnalysisResponse().getPdf().mode();
+		double origin = graph.getNode("varnish").getAnalysisResponse().getPdf().average();
 		
 		Map<Component, Double> impact = new LinkedHashMap<Component, Double>();
 		for (Component comp:service.getComponents()) {
-			impact.put(comp, findImpact(graph, 1d, comp.getName(), "varnish"));
+			impact.put(comp, findImpact(graph, 10d, comp.getName(), "varnish"));
 		}
 		
 		log.info("    origin - {}",origin);
@@ -102,7 +102,8 @@ public class ShardContentWebAnalysis extends AnalysisInstance {
 	public Map<String, double[]> analyze() {
 		Map<String, DiscreteProbDensity> densityMap = new LinkedHashMap<String, DiscreteProbDensity>();
 		for (Component comp:service.getComponents()) {
-			List<Response> responseList = dataService.getTiming(comp.getIpAddress(), comp.getProtocol(), "multi_vdn12_345ms_run_3");
+			//List<Response> responseList = dataService.getTiming(comp.getIpAddress(), comp.getProtocol(), "multi_vdn12_345ms_run_3");
+			List<Response> responseList = dataService.getTiming(comp.getIpAddress(), comp.getProtocol(), "multi_vdns1_2345m_run_3");
 			comp.setResponseList(responseList);
 			double[] responses = dataService.timingToResponse(responseList);
 			DiscreteProbDensity responseDensity = matlab.newDiscreteProbDensity();
@@ -157,6 +158,8 @@ public class ShardContentWebAnalysis extends AnalysisInstance {
 				log.info("{} co {} = {}",new Object[] { ref.getName(), test.getName(), coMatrix.get(ref, test)});
 			}
 		}
+		
+		calculateImpact();
 		
 		return result;
 	}
