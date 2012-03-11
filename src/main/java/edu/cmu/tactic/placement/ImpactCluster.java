@@ -3,13 +3,14 @@ package edu.cmu.tactic.placement;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.cmu.tactic.model.Component;
 
 public class ImpactCluster extends Cluster {
+	private static Logger log = LoggerFactory.getLogger(ImpactCluster.class);
+	
 	public ImpactCluster(String name) {
 		super(name);		
 	}
@@ -90,6 +91,5 @@ public class ImpactCluster extends Cluster {
 			hostArray[pick].add(vm);
 		}
 	}
-	
-	
+		
 }

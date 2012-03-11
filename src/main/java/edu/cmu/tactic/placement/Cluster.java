@@ -2,6 +2,7 @@ package edu.cmu.tactic.placement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -15,7 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 
 /**
  * A cluster consists of multiple hosts
@@ -29,7 +29,7 @@ public abstract class Cluster extends Entity {
 	@JsonProperty LinkedHashMap<String,VirtualMachine> vms;
 	ComponentMonitor componentMonitor;
 	ListMultimap<Host, VirtualMachine> mapping;
-	@Inject Logger log;
+	private static Logger log = LoggerFactory.getLogger(Cluster.class);
 
 	public Cluster(String name) {
 		super(name);

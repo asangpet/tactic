@@ -54,6 +54,12 @@ public class HomeController {
 		model.addAttribute("response", responseData.listServer("192.168.0.106"));
 		return "home";
 	}
+	
+	@RequestMapping(value = "/viewgraph", method = RequestMethod.GET)
+	public String viewGraph(Locale locale, Model model) {
+		logger.info("View graph request");
+		return "graph";
+	}
 
 	@RequestMapping(value = "/servers", produces="application/json")
 	public @ResponseBody Page<Response> showRequest(@RequestParam("address") String address, Model model) {
@@ -63,8 +69,17 @@ public class HomeController {
 		return response;
 	}
 	
+	@RequestMapping(value = "/servers/field", produces="application/json")
+	public @ResponseBody List<?> showRequestField(@RequestParam("address") String address,
+			@RequestParam("field") String field, Model model) {
+		logger.info(address);
+		logger.info(field);
+		return responseData.listServerResponse(address);
+	}
+	
 	@RequestMapping(value = "/graph", produces="application/json")
 	public @ResponseBody HashMap<String, List<HashMap<String,Object>>> showGraph(Model model) {
+		logger.info("Def svc {}",analyzer.getDefaultService());
 		return analyzer.getDefaultService().getAnalysisGraph().json();
 	}
 	

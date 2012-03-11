@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.inject.Inject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cmu.tactic.builder.Builder;
 import edu.cmu.tactic.model.AnalysisGraph;
 import edu.cmu.tactic.model.Component;
@@ -18,22 +20,21 @@ import edu.cmu.tactic.placement.VirtualMachine;
 
 @org.springframework.stereotype.Service
 public class AnalysisService {
-	@Inject	Logger log;
+	private static Logger log = LoggerFactory.getLogger(AnalysisService.class);
 	
 	@Inject MatlabUtility matlab;
 
-	Cluster cluster;
+	@Inject Cluster cluster;
 	Service service;
 	AnalysisGraph graph;
 	
 	public Service getDefaultService() {
-		cluster = new ImpactCluster("impact");
 		((ImpactCluster)cluster).setLog(log);
 		
 		Builder builder = new Builder();
 		cluster = builder.multipleSimpleClusterBuilder(cluster);
 		
-		service = cluster.getService("simple");
+		service = cluster.getService("simple0");
 		return service;
 	}
 	
@@ -103,7 +104,7 @@ public class AnalysisService {
 	
 	public Map<String, double[]> analyze() {
 		Map<String, double[]> result = new LinkedHashMap<String, double[]>();
-		setup("");
+		setup("0");
 		
 		result.put("oweb", graph.getNode("web").getServerResponse().getPdf());
 		result.put("oapp", graph.getNode("app").getServerResponse().getPdf());

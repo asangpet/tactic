@@ -25,6 +25,26 @@ public class Response {
 		return client;
 	}
 	
+	public double getRequestTime() {
+		return requestTime;
+	}
+	
+	public double getResponseTime() {
+		return responseTime;
+	}
+	
+	public long getTimestamp() {
+		return timestamp;
+	}
+	
+	public String getRequest() {
+		return request;
+	}
+	
+	public String getResponse() {
+		return response;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

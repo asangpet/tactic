@@ -5,7 +5,7 @@ apply plugin: 'war'
 version = '0.1'
 sourceCompatibility = '1.7'
 
-springVersion = '3.1.0.RC1'
+springVersion = '3.1.1.RELEASE'
 
 deployPath = '/home/asangpet/apps/apache-tomcat-7.0.19/webapps'
 
@@ -43,7 +43,7 @@ dependencies {
 	compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.8.4' 
 
 	// Matlab
-	compile group: 'matlabcompiler', name: 'matlabcompiler', version: '0.1'
+	compile group: 'matlabcompiler', name: 'matlabcompiler-win64', version: '0.1'
 	runtime group: 'net.java.dev.jna', name: 'jna', version: '3.2.4'
 
 	// Test

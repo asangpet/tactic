@@ -39,8 +39,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		return thymeleafViewResolver;
 	}
 	
+	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+		registry.addResourceHandler("/customjs/**").addResourceLocations("/resources/customjs/");
+		registry.addResourceHandler("/images/**").addResourceLocations("/resources/images/");
+		registry.addResourceHandler("/javascripts/**").addResourceLocations("/resources/javascripts/");
+		registry.addResourceHandler("/stylesheets/**").addResourceLocations("/resources/stylesheets/");
 	}
 	
 }

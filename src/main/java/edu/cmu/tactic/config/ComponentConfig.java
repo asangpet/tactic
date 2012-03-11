@@ -21,4 +21,9 @@ public class ComponentConfig {
 	public MatlabUtility matlab() {
 		return new MatlabUtility();
 	}
+	
+	public static void main(String[] args) {
+		MatlabUtility util = new ComponentConfig().matlab();
+		util.norm(10d, 10d, 10d);
+	}
 }
