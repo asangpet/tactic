@@ -183,4 +183,8 @@ public class MatlabUtility {
 		MatlabUtility util = new ComponentConfig().matlab();
 		System.out.println(util.norm(10d, 10d, 10d).average());
 	}
+	
+	public DiscreteProbDensity newDiscreteProbDensity() {
+		return new DiscreteProbDensity(maxTime/rangeinterval,0,maxTime,offset);
+	}
 }

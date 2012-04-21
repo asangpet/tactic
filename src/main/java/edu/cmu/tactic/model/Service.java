@@ -2,6 +2,7 @@ package edu.cmu.tactic.model;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
@@ -187,5 +188,16 @@ public class Service extends Entity {
 	
 	public Collection<Component> getComponents() {
 		return components.values();
+	}
+	
+	public Iterable<Component> getComponentsIterable() {
+		Iterable<Component> iter = new Iterable<Component>() {
+			
+			@Override
+			public Iterator<Component> iterator() {
+				return components.values().iterator();
+			}
+		};
+		return iter;
 	}
 }
