@@ -2,11 +2,17 @@
 <configuration>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-		    <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+		    <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{10} - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>tactic.log</file>
+		<encoder>
+		    <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{10} - %msg%n</pattern>
 		</encoder>
 	</appender>
 	
-	<logger name="edu.cmu.one" level="DEBUG"/>
+	<logger name="edu.cmu.tactic" level="INFO"/>
 	<logger name="org.springframework.core" level="INFO"/>
 	<logger name="org.springframework.beans" level="INFO"/>
 	<logger name="org.springframework.context" level="INFO"/>
@@ -14,6 +20,7 @@
 	<logger name="org.springframework.test" level="INFO"/>
 
 	<root level="WARN">
+		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

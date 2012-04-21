@@ -17,6 +17,10 @@ public class Zipf {
             this.bottom += (1 / Math.pow(i, this.skew));
         }
     }
+    
+    public int getSize() {
+		return size;
+	}
 
     public void setSeed(long seed) {
         rnd = new Random(seed);

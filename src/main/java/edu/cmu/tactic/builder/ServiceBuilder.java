@@ -3,6 +3,7 @@ package edu.cmu.tactic.builder;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Stack;
 
 import edu.cmu.tactic.model.Component;
 import edu.cmu.tactic.model.CompositionDependency;
@@ -13,6 +14,7 @@ import edu.cmu.tactic.model.Service;
 public class ServiceBuilder extends Builder {
 	Service servicePrototype;
 	LinkedHashSet<Component> currentComponents;
+	Stack<LinkedHashSet<Component>> activeStack;
 	Class<? extends Dependency> rootDependency;
 	
 	public ServiceBuilder(String serviceName, String root) {
@@ -24,7 +26,35 @@ public class ServiceBuilder extends Builder {
 		currentComponents = new LinkedHashSet<Component>();
 		currentComponents.add(rootComp);
 		
-		rootDependency = CompositionDependency.class; 
+		rootDependency = CompositionDependency.class;
+		activeStack = new Stack<LinkedHashSet<Component>>();
+	}
+	
+	/**
+	 * Push current active component to stack and replace the current active set with a distributed dependency
+	 * @param name
+	 * @return
+	 */
+	public ServiceBuilder pushDist(String... names) {
+		activeStack.push(currentComponents);
+		LinkedHashSet<Component> activeComponents = new LinkedHashSet<Component>();
+		for (String name:names) {
+			for (Component comp:currentComponents) {
+				Component upstream = servicePrototype.addComponent(name);
+				servicePrototype.add(new DistributionDependency(comp,upstream));
+				activeComponents.add(upstream);
+			}
+		}
+		currentComponents = activeComponents;
+		return this;
+	}
+	/**
+	 * Replace the current components with the ones on the stack
+	 * @return
+	 */
+	public ServiceBuilder pop() {
+		currentComponents = activeStack.pop();
+		return this;
 	}
 	
 	public ServiceBuilder dist(String... names) {
@@ -53,6 +83,11 @@ public class ServiceBuilder extends Builder {
 		return this;
 	}
 	
+	/**
+	 * Match the upstream tier with the current-tier with one-to-one composition relationship
+	 * @param names
+	 * @return
+	 */
 	public ServiceBuilder match(String... names) {
 		LinkedHashSet<Component> activeComponents = new LinkedHashSet<Component>();
 		int idx = 0;

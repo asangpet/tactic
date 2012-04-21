@@ -1,0 +1,2 @@
+db.responseTime.drop();
+

@@ -48,6 +48,17 @@ public class DiscreteProbDensity {
 		if (slot >= numSlots) slot = numSlots-1;
 		pdf[slot]++;
 	}
+	public void convert(double[] value) {
+		for (int i=0;i<value.length;i++) {
+			int slot = (int)Math.round((value[i]-min) / interval);
+			// 	bounded slot
+			if (slot >= numSlots) slot = numSlots-1;
+			pdf[slot]++;
+		}
+		rawCount = Long.valueOf(value.length);
+		raw = value;
+		doNormalize();
+	}
 	
 	/**
 	 * Adding pdf (convolution) assuming this distribution and b has the same interval
@@ -572,8 +583,8 @@ public class DiscreteProbDensity {
 		return result;
 	}
 	
-	public DiscreteProbDensity setRaw(long raw) {
-		this.rawCount = raw;
+	public DiscreteProbDensity setRawCount(long rawCount) {
+		this.rawCount = rawCount;
 		return this;
 	}
 	

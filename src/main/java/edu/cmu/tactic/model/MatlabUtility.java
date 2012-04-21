@@ -6,8 +6,6 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import edu.cmu.tactic.config.ComponentConfig;
-
 import mcr.*;
 
 public class MatlabUtility {
@@ -177,11 +175,6 @@ public class MatlabUtility {
 			result.pdf[i] = result.pdf[i]/sum;
 		}
 		return result;
-	}	
-	
-	public static void main(String[] args) {
-		MatlabUtility util = new ComponentConfig().matlab();
-		System.out.println(util.norm(10d, 10d, 10d).average());
 	}
 	
 	public DiscreteProbDensity newDiscreteProbDensity() {

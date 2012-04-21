@@ -75,6 +75,7 @@ public class AnalysisGraph extends InstanceGraph {
 		
 		analyzeResponse(root);
 		predict(new LinkedHashMap<String, DiscreteProbDensity>());
+		//predict(densityMap);
 	}
 	
 	public void predict(Map<String, DiscreteProbDensity> densityMap) {
@@ -579,7 +580,7 @@ public class AnalysisGraph extends InstanceGraph {
 			if (node.edited) {
 				// Refit the model to the specified response
 					
-				// Match pdf counter
+				// Match pdf raw counter
 				log.debug("{} - {} - {}",new Object[] {node,node.serverResponse,node.serverResponse.average()});
 				node.analysisResponse = new ParametricDensity(node.serverResponse);
 				node.analysisResponse.pdf.rawCount = node.serverResponse.rawCount;
@@ -644,10 +645,13 @@ public class AnalysisGraph extends InstanceGraph {
 					dPdf.add(it.pdf);
 				}
 				distRespPdf = matlab.multiDistribute(dPdf,distProb);
+				/*
 				distRespPdf.rawCount = 0L;
 				for (ParametricDensity it:distResp) {
+					log.debug("Analysis-Predict {} {}",it.pdf, it.pdf.getClass());
 					distRespPdf.rawCount += it.pdf.rawCount;
 				}
+				*/
 			}
 			
 			////////////////////////////////////////////////////////////
@@ -716,7 +720,7 @@ public class AnalysisGraph extends InstanceGraph {
 								dPdf.add(it.pdf.filter(node.model.transfer.nonparamPdf));
 							}
 						} else {
-							dPdf.add(getPdf(newParam[0],	newParam[1], newParam[2]));
+							dPdf.add(getPdf(newParam[0], newParam[1], newParam[2]));
 						}
 					}
 					newDistPdf = matlab.multiDistribute(dPdf,distProb).ensurePositive().cutoff(node.model.cutoff);

@@ -4,6 +4,7 @@ import edu.cmu.tactic.model.AsynchronousDependency;
 import edu.cmu.tactic.model.Service;
 import edu.cmu.tactic.placement.Cluster;
 import edu.cmu.tactic.placement.Host;
+import edu.cmu.tactic.placement.ImpactCluster;
 import edu.cmu.tactic.placement.VirtualMachine;
 
 public class Builder {
@@ -91,6 +92,5 @@ public class Builder {
 			main.addHost("host"+host);
 		}
 		return main;
-	}
-	
+	}	
 }

@@ -1,6 +1,9 @@
 package edu.cmu.tactic.model;
 
 import java.util.Collection;
+import java.util.List;
+
+import edu.cmu.tactic.data.Response;
 
 /**
  * A component belongs to a service and could be hosted on different virtual machines
@@ -11,6 +14,12 @@ import java.util.Collection;
 public class Component extends Entity {
 	double coarrival;
 	double impact;
+	
+	String ipAddress;
+	String protocol = "HTTP";
+	
+	List<Response> responseList;
+	double[] density;
 	
 	public Component(String name) {
 		super(name);
@@ -55,5 +64,39 @@ public class Component extends Entity {
 	
 	public double getImpact() {
 		return impact;
+	}
+	
+	public Component setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+		return this;
+	}
+	
+	public Component setProtocol(String protocol) {
+		this.protocol = protocol;
+		return this;
+	}
+	
+	public String getIpAddress() {
+		return ipAddress;
+	}
+	
+	public String getProtocol() {
+		return protocol;
+	}
+	
+	public void setDensity(double[] density) {
+		this.density = density;
+	}
+	
+	public void setResponseList(List<Response> responseList) {
+		this.responseList = responseList;
+	}
+	
+	public List<Response> getResponseList() {
+		return responseList;
+	}
+	
+	public double[] getDensity() {
+		return density;
 	}
 }
