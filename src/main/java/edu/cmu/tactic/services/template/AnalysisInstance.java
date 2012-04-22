@@ -1,4 +1,4 @@
-package edu.cmu.tactic.services;
+package edu.cmu.tactic.services.template;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,8 +11,8 @@ import edu.cmu.tactic.placement.Host;
 import edu.cmu.tactic.placement.VirtualMachine;
 
 public abstract class AnalysisInstance {
-	Logger log;	
-	MatlabUtility matlab;
+	protected Logger log;	
+	protected MatlabUtility matlab;
 	
 	public void setLog(Logger log) {
 		this.log = log;

@@ -1,4 +1,4 @@
-package edu.cmu.tactic.services;
+package edu.cmu.tactic.services.template;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -51,6 +51,7 @@ public class DemoWebAnalysis extends AnalysisInstance {
 		}
 	}
 	
+	@Override
 	public Map<Host,Collection<VirtualMachine>> calculatePlacement() {
 		for (int id=0;id<10;id++) {
 			setup(""+id);
@@ -69,7 +70,7 @@ public class DemoWebAnalysis extends AnalysisInstance {
 		return cluster.getMapping().asMap();
 	}
 	
-	void setup(String id) {
+	public void setup(String id) {
 		service = cluster.getService("simple"+id);
 		log.debug("{} - {}","simple"+id, service);
 		graph = service.getAnalysisGraph();
@@ -83,6 +84,7 @@ public class DemoWebAnalysis extends AnalysisInstance {
 		//graph.analyze(densityMap);
 	}
 	
+	@Override
 	public Map<String, double[]> analyze() {
 		Map<String, double[]> result = new LinkedHashMap<String, double[]>();
 		

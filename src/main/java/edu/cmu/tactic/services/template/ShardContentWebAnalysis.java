@@ -1,14 +1,11 @@
-package edu.cmu.tactic.services;
+package edu.cmu.tactic.services.template;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ArrayTable;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 
 import edu.cmu.tactic.analysis.ResponseAnalysis;
 import edu.cmu.tactic.builder.Builder;
@@ -21,6 +18,7 @@ import edu.cmu.tactic.placement.Cluster;
 import edu.cmu.tactic.placement.Host;
 import edu.cmu.tactic.placement.ImpactCluster;
 import edu.cmu.tactic.placement.VirtualMachine;
+import edu.cmu.tactic.services.ResponseDataService;
 
 public class ShardContentWebAnalysis extends AnalysisInstance {
 	Cluster cluster;
@@ -74,6 +72,7 @@ public class ShardContentWebAnalysis extends AnalysisInstance {
 		}
 	}
 	
+	@Override
 	public Map<Host,Collection<VirtualMachine>> calculatePlacement() {
 		/*
 		for (int id=0;id<10;id++) {
@@ -93,12 +92,13 @@ public class ShardContentWebAnalysis extends AnalysisInstance {
 		return cluster.getMapping().asMap();
 	}
 	
-	void setup() {
+	public void setup() {
 		graph = service.getAnalysisGraph();
 		graph.setLog(log);
 		graph.setMatlab(matlab);
 	}
 	
+	@Override
 	public Map<String, double[]> analyze() {
 		Map<String, DiscreteProbDensity> densityMap = new LinkedHashMap<String, DiscreteProbDensity>();
 		for (Component comp:service.getComponents()) {

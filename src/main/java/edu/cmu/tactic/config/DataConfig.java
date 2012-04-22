@@ -20,7 +20,8 @@ public class DataConfig {
 	
 	public @Bean MongoFactoryBean mongo() {
 		MongoFactoryBean mongo = new MongoFactoryBean();
-		mongo.setHost("192.168.0.242");
+		//mongo.setHost("192.168.0.242");
+		mongo.setHost("127.0.0.1");
 		return mongo;
 	}
 	
